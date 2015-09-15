@@ -1,11 +1,13 @@
 <?PHP
 $config = array();
 $config["SITE_NAME"] = "Project Status";
+$config["ALLOW_IP"] = array("127.0.0.1");
 // DB 配置
 $config["DB_HOST"] = "localhost";
 $config["DB_USER"] = "root";
 $config["DB_PASSWORD"] = "123456";
 $config["DB_NAME"] = "test";
+$config["DB_TABLE"] = "project_status";
 // STAGE 配置
 $config["STAGE"] = array("0" => "PreDEV","1" => "DEV","2" => "PreAlpha","3" => "Production");
 
@@ -32,10 +34,16 @@ class mysql_lib {
         mysql_ping($this-con);
 
         $re = mysql_query($sql,$this->con);
-        return $this->to_array($re);
+        return $re;
     }
 
-    public function to_array($result){
+    public function query_one($sql){
+        mysql_ping($this-con);
+
+        mysql_query($sql,$this->con);
+    }
+
+    public function to_array($result,$bool=false){
         $return_array = array();
 
         while($row=mysql_fetch_row($result)){
@@ -44,14 +52,80 @@ class mysql_lib {
                 $filed_name = mysql_field_name($result, $i);
                 $tmp_array[$filed_name] = $row[$i];
             }
+
+            if(mysql_num_rows($result) == 1 && $bool ){
+                return $tmp_array;
+            }
+
             array_push($return_array, $tmp_array);
         }
         return $return_array;
     }
 
     public function get_all(){
-        $sql = "select * from project_status";
-        return $this->query($sql);
+        global $config;
+        $sql = "select * from ".$config["DB_TABLE"];
+        $re = $this->query($sql);
+
+        return $this->to_array($re);
+    }
+
+    public function get_in_process(){
+        global $config;
+        $sql = "select * from ".$config["DB_TABLE"]." where finish = 0";
+        $re = $this->query($sql);
+
+        return $this->to_array($re);
+    }
+
+    public function find($id){
+        global $config;
+        $sql = "select * from ".$config["DB_TABLE"]." where id = ".$id;
+        $re = $this->query($sql);
+
+        return $this->to_array($re,true);
+    }
+
+    public function finish($id){
+        global $config;
+        $sql = "UPDATE ".$config["DB_TABLE"]." SET finish = 1  where id = ".$id;
+
+        return $this->query_one($sql);
+    }
+
+    public function deleted($id){
+        global $config;
+        $sql = "UPDATE ".$config["DB_TABLE"]." SET deleted = 1  where id = ".$id;
+
+        return $this->query_one($sql);
+    }
+
+    public function insert(){
+        global $config;
+        $stage_json = new stage_date_json();
+
+        $id = trim($_REQUEST['id']);
+        $name = trim($_REQUEST['name']);
+        $theme_function = trim($_REQUEST['theme_function']);
+        $version = trim($_REQUEST['version']);
+        $status = trim($_REQUEST['status']);
+        $stage = trim($_REQUEST['stage']);
+        $stage_date_json = mysql_escape_string($stage_json->stage_date_init());
+        $note = trim($_REQUEST['note']);
+
+
+        if(empty($name) || empty($theme_function) || empty($version) || empty($status) || empty($stage)){
+            die("insert fileds is empty.");
+        }
+
+        if(empty($id)){
+            $sql = "INSERT INTO ".$config["DB_TABLE"]." values ('','".$name."','".$theme_function."','".$version."','".$status."','".$stage."','".$stage_date_json."','".$note."','','')";
+        } else {
+            $sql = "UPDATE ".$config["DB_TABLE"]." set name = '".$name."', theme_function = '".$theme_function."', version = '".$version."',status = '".$status."', stage = '".$stage."', note = '".$note."' WHERE id = ".$id;
+        }
+
+        //echo $sql;
+        $this->query_one($sql);
     }
 }
 
@@ -80,9 +154,22 @@ class stage_date_json{
     }
 }
 
+class allow{
+    public function pass(){
+        global $config;
+
+        foreach($config["ALLOW_IP"] as $ip){
+            if(strcmp($ip,$_SERVER["REMOTE_ADDR"]) == 0) return true;
+        }
+    }
+}
+
 // 实例数据库
 $mysql = new mysql_lib();
-$stage_json = new stage_date_json();
-
 $mysql->conn_db();
+// 实例JSON 解释器
+$stage_json = new stage_date_json();
+// 实例ALLOW编辑权限
+$allow = new allow();
 ?>
+
