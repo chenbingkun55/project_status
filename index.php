@@ -21,6 +21,31 @@
        <script type="text/javascript" src="public/js/jquery.metadata.js"></script>
        <script>
        $(document).ready(function(){
+           $.extend({edit_cancel:function(){
+               $('.show_opt').parent().find("td").each(function(){
+                   $(this).show();
+               });
+
+               $('.show_opt').remove();
+               row_edit_bool = false;
+           }});
+
+           $.extend({finish:function(fid){
+               $.get("admin.php?finish="+fid,function(date,status){
+                    if(status) window.location.reload();
+               });
+           }});
+
+           $.extend({delete:function(did){
+             if(confirm("是否删除") == true) {
+               $.get("admin.php?deleted="+did,function(date,status){
+                    if(status) window.location.reload();
+               });
+              }
+              $.edit_cancel();
+           }});
+
+           var row_edit_bool = false;
            //第一列不进行排序(索引从0开始)
            $.tablesorter.defaults.headers = {
                0: {sorter: false},
@@ -34,7 +59,48 @@
                 usNumberFormat : false,
                 sortReset      : true,
                 sortRestart    : true
+           });
+            
+            $("th").dblclick(function(){
+                $.edit_cancel();
             });
+
+           $("#edit_cancel_ajax").click(function(){
+                alert("TEST");
+                $.edit_cancel();
+           });
+
+           $('td').dblclick(function(){
+               var edit_row = $(this).parent();
+               var show_opt = "<tr class=\"show_opt\"><td style=\"text-align:center\" colspan=\"14\">[<a href=\"admin.php?id="+edit_row.attr("id")+"\">修改</a>] [删除] [己完成]<td></tr>";
+
+               if(row_edit_bool){
+                   $('.show_opt').parent().find("td").each(function(){
+                       $(this).show();
+                   });
+                   //$('td').find('input').each(function(){
+                       //if($(this).attr("type") == "text"){
+                           //$(this).parent().text($(this).attr("value"));
+                       //}
+                   //});
+                   row_edit_bool = false;
+               } else {
+                   edit_row.find("td").each(function(){
+                       $(this).hide();
+                       //var td_text = $(this).text();
+                       //var new_td = "<input type=\"text\" value=\""+ td_text +"\" style=\"display:inline;width:100%\" \>";
+                       //$(this).html(new_td);
+                   });
+
+                   $.get("admin.php?id="+edit_row.attr("id"),function(data,status){
+                       edit_row.append("<td class=\"show_opt\" colspan=\"14\">"+data+"</td>");
+                   });
+                   row_edit_bool = true;
+               }
+
+               $('.show_opt').remove();
+               //edit_row.after(show_opt);
+           });
        });
        </script>
     </HEAD>
@@ -42,7 +108,7 @@
         <table id="project_status_list" class="tablesorter">
             <thead>
                 <tr>
-                <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center">项目状态</th>
+                <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center">项目状态&nbsp;<a href="admin.php" style="font-size:12px;">[添加]</a></th>
                 </tr>
                 <tr>
                     <th class="header" rowspan="2">项目</th>
@@ -69,12 +135,12 @@
             <tbody>
                 <?PHP
                     foreach($tbl_data as $row){
-                        echo "<tr><td>"
-                            .$row['name']."</td><td>"
-                            .$row['theme_function']."</td><td>"
-                            .$row['version']."</td><td>"
-                            .$row['status']."</td><td>"
-                            .$row['stage']."</td>";
+                        echo "<tr id=\"".$row["id"]."\">";
+                        echo "<td>".$row["name"]."</td>";
+                        echo "<td>".$row['theme_function']."</td>";
+                        echo "<td>".$row['version']."</td>";
+                        echo "<td>".$row['status']."</td>";
+                        echo "<td>".$row['stage']."</td>";
 
                         $stage_data = $stage_json->decode($row['stage_date_json']);
                         foreach($config["STAGE"] as $stage){

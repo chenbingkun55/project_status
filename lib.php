@@ -31,14 +31,14 @@ class mysql_lib {
     }
 
     public function query($sql){
-        mysql_ping($this-con);
+        mysql_ping($this->con);
 
         $re = mysql_query($sql,$this->con);
         return $re;
     }
 
     public function query_one($sql){
-        mysql_ping($this-con);
+        mysql_ping($this->con);
 
         mysql_query($sql,$this->con);
     }
@@ -72,7 +72,7 @@ class mysql_lib {
 
     public function get_in_process(){
         global $config;
-        $sql = "select * from ".$config["DB_TABLE"]." where finish = 0";
+        $sql = "select * from ".$config["DB_TABLE"]." where finish = 0 AND deleted = 0";
         $re = $this->query($sql);
 
         return $this->to_array($re);
@@ -102,6 +102,7 @@ class mysql_lib {
 
     public function insert(){
         global $config;
+        $tmp_array = array();
         $stage_json = new stage_date_json();
 
         $id = trim($_REQUEST['id']);
@@ -110,9 +111,17 @@ class mysql_lib {
         $version = trim($_REQUEST['version']);
         $status = trim($_REQUEST['status']);
         $stage = trim($_REQUEST['stage']);
-        $stage_date_json = mysql_escape_string($stage_json->stage_date_init());
         $note = trim($_REQUEST['note']);
 
+        foreach($config["STAGE"] as $item){
+            @$plan_date = trim($_REQUEST["PlanDate-".$item]) ? trim($_REQUEST["PlanDate-".$item]) : "N\A";
+            @$plan_color = trim($_REQUEST["PlanColor-".$item]) ? trim($_REQUEST["PlanColor-".$item]) : "N\A";
+            @$real_date = trim($_REQUEST["RealDate-".$item]) ? trim($_REQUEST["RealDate-".$item]) : "N\A";
+            @$real_color = trim($_REQUEST["RealColor-".$item]) ? trim($_REQUEST["RealColor-".$item]) : "N\A";
+
+            $tmp_array[$item] = array('PlanDate' => $plan_date,'PlanColor' => $plan_color,'RealDate' => $real_date,'RealColor' => $real_color);
+        }
+        $stage_date_json = mysql_escape_string($stage_json->encode($tmp_array));
 
         if(empty($name) || empty($theme_function) || empty($version) || empty($status) || empty($stage)){
             die("insert fileds is empty.");
@@ -121,7 +130,7 @@ class mysql_lib {
         if(empty($id)){
             $sql = "INSERT INTO ".$config["DB_TABLE"]." values ('','".$name."','".$theme_function."','".$version."','".$status."','".$stage."','".$stage_date_json."','".$note."','','')";
         } else {
-            $sql = "UPDATE ".$config["DB_TABLE"]." set name = '".$name."', theme_function = '".$theme_function."', version = '".$version."',status = '".$status."', stage = '".$stage."', note = '".$note."' WHERE id = ".$id;
+            $sql = "UPDATE ".$config["DB_TABLE"]." set name = '".$name."', theme_function = '".$theme_function."', version = '".$version."',status = '".$status."', stage = '".$stage."',stage_date_json='".$stage_date_json."', note = '".$note."' WHERE id = ".$id;
         }
 
         //echo $sql;
@@ -137,9 +146,11 @@ class stage_date_json{
         return $tmp_array;
     }
 
-    public function encode($str){
-        $tmp_array = array();
-        echo json_encode($tmp_array);
+    public function encode($json_array){
+        if(is_array($json_array)){
+            return json_encode($json_array);
+        }
+        return "";
     }
 
     public function stage_date_init(){
@@ -150,7 +161,7 @@ class stage_date_json{
             $tmp_array[$stage] = array('PlanDate' => 'N/A','PlanColor' => '','RealDate' => 'N/A','RealColor' => '');
         }
 
-        return json_encode($tmp_array);
+        return $tmp_array;
     }
 }
 
