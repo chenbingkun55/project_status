@@ -44,11 +44,11 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
         <form action="admin.php" method="post">
             <table style="background:red">
                 <tr>
-                    <td><INPUT class="input_ajax" type="text" name="name" value="<?PHP echo $update["name"] ?>"/></td>
-                    <td><INPUT class="input_ajax" type="text" name="theme_function" value="<?PHP echo $update["theme_function"] ?>"/></td>
-                    <td><INPUT class="input_ajax" type="text" name="version" value="<?PHP echo $update["version"] ?>"/></td>
-                    <td>
-                        <select name="status" style=\"width:100%\">
+                    <td class="name"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo $update["name"] ?>" onClick="$.list_names();"/></td>
+                    <td class="theme_function"><INPUT class="input_ajax" type="text" name="theme_function" value="<?PHP echo $update["theme_function"] ?>"/></td>
+                    <td class="version"><INPUT class="input_ajax" type="text" name="version" value="<?PHP echo $update["version"] ?>"/></td>
+                    <td class="status">
+                        <select class="select_ajax" name="status" style=\"width:100%\">
                         <?PHP
                             $status_array = array("提前","正常","延迟");
                             foreach($status_array as $status){
@@ -65,8 +65,8 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         ?>
                         </select>
                     </td>
-                    <td>
-                        <select name="stage">
+                    <td class="stage">
+                        <select class="select_ajax" name="stage">
                         <?PHP
                             foreach($config["STAGE"] as $stage){
                                 if(strcmp($update["stage"],$stage) == 0){
@@ -79,38 +79,55 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         </select>
                     </td>
 <?PHP
-                        $colors = array("red","green","yellow");
-                        foreach($stage_json->decode($update['stage_date_json']) as $stage => $date){
-                            echo "<td style=\"background:".$date["PlanColor"]."\">";
-                            echo "<input class=\"input_ajax\" type=\"date\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
-                            foreach($colors as $color){
+                        $stage_array = $stage_json->stage_date_init();
+                        if($id) {
+                            $stage_array = $stage_json->decode($update['stage_date_json']);
+                        }
+
+                        $colors = array("无" => "","red" => "red","green" => "green","yellow" => "yellow");
+                        foreach($stage_array as $stage => $date){
+                            echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
+                            echo "<input id=\"plandate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
+                            foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
-                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"\">".$color;
+                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"\">".$key."<BR>";
                                 } else {
-                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\">".$color;
+                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\">".$key."<BR>";
                                 }
                             }
                             echo "</td>";
-                            echo "<td style=\"background:".$date["RealColor"]."\">";
-                            echo "<input class=\"input_ajax\" type=\"date\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
-                            foreach($colors as $color){
+                            echo "<td class=\"stage_date\" style=\"background:".$date["RealColor"]."\">";
+                            echo "<input id=\"realdate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
+                            foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
-                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" checked=\"checked\">".$color;
+                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" checked=\"checked\">".$key."<BR>";
                                 } else {
-                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\">".$color;
+                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\">".$key."<BR>";
                                 }
                             }
                             echo "</td>";
                         }
 ?>
-                    <td><INPUT class="input_ajax" type="text" name="note" value="<?PHP echo $update["note"]?>" /></td>
+                    <td class="note"><textarea class="textarea_ajax" rows="5" name="note" value="<?PHP echo $update["note"]?>" /></textarea></td>
                 </tr>
                 <tr>
                     <td colspan="14" style="text-align:center"><INPUT type="hidden" name="id" value="<?PHP echo $update["id"]?>" />
+<?PHP
+if($id):
+?>
                         <INPUT type="SUBMIT" value="更新" />
                         <INPUT type="BUTTON" value="取消" onClick="$.edit_cancel();" />
-                        <INPUT type="BUTTON" value="己完成" onClick="$.finish(<?PHP echo $update["id"] ?>)" />
-                        <INPUT type="BUTTON" value="删除" onClick="$.delete(<?PHP echo $update["id"] ?>)" />
+                        ---
+                        <INPUT type="BUTTON" value="己完成" style="background:red;" onClick="$.finish(<?PHP echo $update["id"] ?>)" />
+                        <INPUT type="BUTTON" value="删除" style="background:red;" onClick="$.delete(<?PHP echo $update["id"] ?>)" />
+<?PHP
+else:
+?>
+                        <INPUT type="SUBMIT" value="添加" />
+                        <INPUT type="BUTTON" value="取消" onClick="$.edit_cancel();" />
+<?PHP
+endif;
+?>
                     </td>
                 </tr>
             </table>
@@ -171,27 +188,27 @@ else:
                     </td>
                 </tr>
 <?PHP
-                        $colors = array("red","green","yellow");
+                        $colors = array("无" => "","red" => "red","green" => "green","yellow" => "yellow");
                         foreach($stage_json->stage_date_init() as $stage => $date){
                             echo "<tr><td>".$stage."计划:</td>";
                             echo "<td>";
-                            echo "<input type=\"date\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
-                            foreach($colors as $color){
+                            echo "<input id=\"plandate_".$stage."\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
+                            foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
-                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"\">".$color;
+                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"\">".$key;
                                 } else {
-                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\">".$color;
+                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\">".$key;
                                 }
                             }
                             echo "</td></tr>";
                             echo "<tr><td>".$stage."实际:</td>";
                             echo "<td>";
-                            echo "<input type=\"date\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
-                            foreach($colors as $color){
+                            echo "<input id=\"realdate_".$stage."\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
+                            foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
-                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" checked=\"checked\">".$color;
+                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" checked=\"checked\">".$key;
                                 } else {
-                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\">".$color;
+                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\">".$key;
                                 }
                             }
                             echo "</td></tr>";
@@ -199,7 +216,7 @@ else:
 ?>
                 <tr>
                     <td>备注:</td>
-                    <td><INPUT type="text" name="note" value="<?PHP echo @$update["note"]?>" /></td>
+                    <td><textarea name="note" value="<?PHP echo @$update["note"]?>" rows="5" /></textarea></td>
                 </tr>
                 <tr>
                     <INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />
@@ -207,10 +224,22 @@ else:
                 </tr>
             </table>
         </form>
+       <script type="text/javascript" src="public/js/jquery-2.1.4.min.js"></script>
+       <script type="text/javascript" src="public/js/jquery.datepicker.min.js"></script>
 <?PHP
 endif;
 ?>
     </BODY>
+   <script>
+       $(document).ready(function(){
+        <?PHP
+            foreach($config["STAGE"] as $stage){
+               echo "$('#plandate_".$stage."').datePicker();\n";
+               echo "$('#realdate_".$stage."').datePicker();\n";
+            }
+        ?>
+       });
+   </script>
 </HTML>
 <?PHP
 #endif

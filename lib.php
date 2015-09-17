@@ -78,6 +78,14 @@ class mysql_lib {
         return $this->to_array($re);
     }
 
+    public function get_names(){
+        global $config;
+        $sql = "select name from ".$config["DB_TABLE"]." group by name";
+        $re = $this->query($sql);
+
+        return $this->to_array($re,true);
+    }
+
     public function find($id){
         global $config;
         $sql = "select * from ".$config["DB_TABLE"]." where id = ".$id;

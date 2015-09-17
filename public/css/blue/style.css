@@ -28,10 +28,10 @@ table.tablesorter tbody td {
 table.tablesorter tbody tr.odd td {
 	background-color:#F0F0F6;
 }
-table.tablesorter thead tr .headerSortUp {
+table.tablesorter thead tr .tablesorter-headerAsc {
 	background-image: url(asc.gif);
 }
-table.tablesorter thead tr .headerSortDown {
+table.tablesorter thead tr .tablesorter-headerDesc {
 	background-image: url(desc.gif);
 }
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
