@@ -1,13 +1,12 @@
 <?PHP
 session_start();
-#define PROJECT_STATUS
-    if( ! isset($_SESSION['model_edit'])){ //判断当前会话变量是否注册
-        $_SESSION["model_edit"] = 0;
-    }
 
     include "lib.php";
     $tbl_data = $mysql->get_in_process();
-    $allow->pass(); //通过IP检查
+    if(@$_REQUEST['export']) {
+        header("Content-type:application/vnd.ms-excel");
+        header("Content-Disposition:attachment;filename=export_project_status.xlsx");
+    }
 ?>
 <!DOCTYPE HTML>
     <HEAD>
@@ -18,9 +17,6 @@ session_start();
        <!--<link type="text/css" rel="stylesheet" href="public/css/theme.default.css" />-->
        <link type="text/css" rel="stylesheet" href="public/css/blue/style.css" />
        <link type="text/css" rel="stylesheet" href="public/css/common.css" />
-       <link type="text/css" rel="stylesheet" href="public/css/button.css" />
-       <link href="public/css/wdDatePicker/page.css" rel="stylesheet" type="text/css" />
-       <link href="public/css/wdDatePicker/dp.css" rel="stylesheet" type="text/css" />
 
        <!--<script type="text/javascript" src="public/js/jquery-1.2.6.min.js"></script>-->
        <script type="text/javascript" src="public/js/jquery-2.1.4.min.js"></script>
@@ -37,14 +33,19 @@ session_start();
                $("#main_notify").fadeOut(2500);
            }});
 
+           $.extend({export:function(){
+               window.open("index.php?export=1");
+           }});
+
            $.extend({model_switch:function(){
                // 默认打开只读模式
-               var model = $("#model_status").text();
-               if(model == "编辑模式"){
+               var read_only = $("#model_status").attr("enable");
+               if(read_only == 1){
                     $.get("model_status.php?enable=0",function(data,status){
                        if(status == "success") {
                            $.notify("进入只读模式");
                            model_edit = false;
+                           $("#model_status").attr("enable","0");
                            $("#model_status").text("只读模式");
                        }
                     });
@@ -53,6 +54,7 @@ session_start();
                        if(status == "success") {
                            $.notify("进入编辑模式<BR>添加: 双击表格标头.<BR>修改: 双击要编辑的行.");
                            model_edit = true;
+                           $("#model_status").attr("enable","1");
                            $("#model_status").text("编辑模式");
                        }
                     });
@@ -192,9 +194,11 @@ session_start();
 <?PHP
         if(@$_SESSION["model_edit"] == 1) {
             echo "model_edit = true;";
+            echo "$(\"#model_status\").attr(\"enable\",\"1\");";
             echo "$(\"#model_status\").text(\"编辑模式\");";
         } else {
             echo "model_edit = false;";
+            echo "$(\"#model_status\").attr(\"enable\",\"0\");";
             echo "$(\"#model_status\").text(\"只读模式\");";
         }
 ?>
@@ -209,19 +213,40 @@ session_start();
                 <tr>
                 <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center;height:60px;">项目状态</th>
                 </tr>
+<?PHP
+    if(! @$_REQUEST['export']):
+?>
                 <tr>
                     <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>">
-                        <div class="filter" style="width:100%;height:100%;">
-                        <div class="model_status" id="model_status" enable="0" onClick="$.model_switch();">
-                            只读模式
+                    <div class="function">
+                        <div class="filter">
+                            <div class="jquery">
+                                jquery
+                            </div>
+                            <div class="php">
+                                php
+                            </div>
                         </div>
-                        <div class="export">
-                            导出
+<?PHP
+    if($allow->pass()):
+?>
+                        <div class="admin">
+                            <div class="model_status" id="model_status" enable="0" onClick="$.model_switch();">
+                                只读模式
+                            </div>
+                            <div class="export" onClick="$.export();">
+                                导出 Excel
+                            </div>
+<?PHP
+    endif;
+?>
                         </div>
-                                Filter
-                        </div>
+                    </div>
                     </th>
                 </tr>
+<?PHP
+    endif;
+?>
                 <tr>
                     <th class="header name" rowspan="2">项目</th>
                     <th class="header theme-function" rowspan="2">主题/功能</th>

@@ -1,7 +1,4 @@
 <?PHP
-#ifundef PROJECT_STATUS
-    //die("access deny.");
-#else
 session_start();
 
     include "lib.php";
@@ -243,5 +240,4 @@ endif;
    </script>
 </HTML>
 <?PHP
-#endif
 ?>
