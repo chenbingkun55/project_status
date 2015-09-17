@@ -1,7 +1,7 @@
 <?PHP
 $config = array();
 $config["SITE_NAME"] = "Project Status";
-$config["ALLOW_IP"] = array("127.0.0.1");
+$config["ALLOW_IP"] = array("127.0.0.1","192.168.23.100","192.168.23.96");
 // DB 配置
 $config["DB_HOST"] = "localhost";
 $config["DB_USER"] = "root";
@@ -63,6 +63,14 @@ class mysql_lib {
     }
 
     public function get_all(){
+        global $config;
+        $sql = "select * from ".$config["DB_TABLE"];
+        $re = $this->query($sql);
+
+        return $this->to_array($re);
+    }
+
+    public function filter(){
         global $config;
         $sql = "select * from ".$config["DB_TABLE"];
         $re = $this->query($sql);
