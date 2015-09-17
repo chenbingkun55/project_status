@@ -1,3 +1,31 @@
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.main_notify {
+    margin: auto;
+    left: 0; right: 0;
+    padding: 5px;
+    display: none;
+    position: absolute; 
+    text-align: center;
+    background-color: khaki;
+    color: ForestGreen;
+    width: 350px;
+}
+
+.main_header {
+    width: 100%;
+    height: 100px;
+}
+
+.model_status {
+    background-color: khaki;
+    color: ForestGreen;
+    white-space:nowrap;
+}
+
 input.input_ajax {
     margin: 0px;
     padding: 0px;

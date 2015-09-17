@@ -2,6 +2,7 @@
 #ifundef PROJECT_STATUS
     //die("access deny.");
 #else
+session_start();
 
     include "lib.php";
 
@@ -20,7 +21,7 @@
     }
 
     if(!empty($id)){
-        $update = $mysql->find($id);
+        @$update = $mysql->find($id);
     }
 
     if($_POST){
@@ -44,15 +45,15 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
         <form action="admin.php" method="post">
             <table style="background:red">
                 <tr>
-                    <td class="name"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo $update["name"] ?>" onClick="$.list_names();"/></td>
-                    <td class="theme_function"><INPUT class="input_ajax" type="text" name="theme_function" value="<?PHP echo $update["theme_function"] ?>"/></td>
-                    <td class="version"><INPUT class="input_ajax" type="text" name="version" value="<?PHP echo $update["version"] ?>"/></td>
+                    <td class="name"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
+                    <td class="theme_function"><INPUT class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
+                    <td class="version"><INPUT class="input_ajax" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
                     <td class="status">
                         <select class="select_ajax" name="status" style=\"width:100%\">
                         <?PHP
                             $status_array = array("提前","正常","延迟");
                             foreach($status_array as $status){
-                                if(strcmp($status,$update["status"]) == 0){
+                                if(strcmp($status,@$update["status"]) == 0){
                                     echo "<option value=\"".$status."\" selected=\"selected\">".$status."</option>";
                                 } else {
                                     if(strcmp($status,"正常") == 0){
@@ -69,7 +70,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         <select class="select_ajax" name="stage">
                         <?PHP
                             foreach($config["STAGE"] as $stage){
-                                if(strcmp($update["stage"],$stage) == 0){
+                                if(strcmp(@$update["stage"],$stage) == 0){
                                     echo "<option value=\"".$stage."\" selected=\"selected\">".$stage."</option>";
                                 } else {
                                     echo "<option value=\"".$stage."\">".$stage."</option>";
@@ -81,7 +82,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 <?PHP
                         $stage_array = $stage_json->stage_date_init();
                         if($id) {
-                            $stage_array = $stage_json->decode($update['stage_date_json']);
+                            $stage_array = $stage_json->decode(@$update['stage_date_json']);
                         }
 
                         $colors = array("无" => "","red" => "red","green" => "green","yellow" => "yellow");
@@ -108,18 +109,18 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "</td>";
                         }
 ?>
-                    <td class="note"><textarea class="textarea_ajax" rows="5" name="note" value="<?PHP echo $update["note"]?>" /></textarea></td>
+                    <td class="note"><textarea class="textarea_ajax" rows="5" name="note"><?PHP echo @$update["note"]?></textarea></td>
                 </tr>
                 <tr>
-                    <td colspan="14" style="text-align:center"><INPUT type="hidden" name="id" value="<?PHP echo $update["id"]?>" />
+                    <td colspan="14" style="text-align:center"><INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />
 <?PHP
 if($id):
 ?>
-                        <INPUT type="SUBMIT" value="更新" />
+                        <INPUT type="SUBMIT" value="更新" onClick="$.submit();" />
                         <INPUT type="BUTTON" value="取消" onClick="$.edit_cancel();" />
                         ---
-                        <INPUT type="BUTTON" value="己完成" style="background:red;" onClick="$.finish(<?PHP echo $update["id"] ?>)" />
-                        <INPUT type="BUTTON" value="删除" style="background:red;" onClick="$.delete(<?PHP echo $update["id"] ?>)" />
+                        <INPUT type="BUTTON" value="己完成" style="background:red;" onClick="$.finish(<?PHP echo @$update["id"] ?>)" />
+                        <INPUT type="BUTTON" value="删除" style="background:red;" onClick="$.delete(<?PHP echo @$update["id"] ?>)" />
 <?PHP
 else:
 ?>
@@ -216,7 +217,7 @@ else:
 ?>
                 <tr>
                     <td>备注:</td>
-                    <td><textarea name="note" value="<?PHP echo @$update["note"]?>" rows="5" /></textarea></td>
+                    <td><textarea name="note" rows="5" /><?PHP echo @$update["note"]?></textarea></td>
                 </tr>
                 <tr>
                     <INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />

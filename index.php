@@ -1,5 +1,9 @@
 <?PHP
+session_start();
 #define PROJECT_STATUS
+    if( ! isset($_SESSION['model_edit'])){ //判断当前会话变量是否注册
+        $_SESSION["model_edit"] = 0;
+    }
 
     include "lib.php";
     $tbl_data = $mysql->get_in_process();
@@ -11,9 +15,10 @@
        <meta http-equiv="pragma" content="no-cache" />
        <meta http-equiv="cache-control" content="no-cache" />
        <TITLE> <?PHP echo $config["SITE_NAME"] ?></TITLE>
-       <link type="text/css" rel="stylesheet" href="public/css/theme.default.css" />
-       <!--<link type="text/css" rel="stylesheet" href="public/css/blue/style.css" />-->
+       <!--<link type="text/css" rel="stylesheet" href="public/css/theme.default.css" />-->
+       <link type="text/css" rel="stylesheet" href="public/css/blue/style.css" />
        <link type="text/css" rel="stylesheet" href="public/css/common.css" />
+       <link type="text/css" rel="stylesheet" href="public/css/button.css" />
        <link href="public/css/wdDatePicker/page.css" rel="stylesheet" type="text/css" />
        <link href="public/css/wdDatePicker/dp.css" rel="stylesheet" type="text/css" />
 
@@ -26,6 +31,34 @@
        <script>
 
        $(document).ready(function(){
+           $.extend({notify:function(notify_text){
+               $("#main_notify").html(notify_text);
+               $("#main_notify").stop().fadeIn();
+               $("#main_notify").fadeOut(2500);
+           }});
+
+           $.extend({model_switch:function(){
+               // 默认打开只读模式
+               var model = $("#model_status").text();
+               if(model == "编辑模式"){
+                    $.get("model_status.php?enable=0",function(data,status){
+                       if(status == "success") {
+                           $.notify("进入只读模式");
+                           model_edit = false;
+                           $("#model_status").text("只读模式");
+                       }
+                    });
+               } else {
+                    $.get("model_status.php?enable=1",function(data,status){
+                       if(status == "success") {
+                           $.notify("进入编辑模式<BR>添加: 双击表格标头.<BR>修改: 双击要编辑的行.");
+                           model_edit = true;
+                           $("#model_status").text("编辑模式");
+                       }
+                    });
+               }
+           }});
+
            $.extend({list_names:function(){
                  var $list_name = $("<ul class='autocomplete'></ul>").hide().insertAfter("#name");
                  var $name = $('#name');
@@ -54,6 +87,7 @@
                    $(this).show();
                });
 
+               $.notify('编辑取消');
                $('.show_opt').remove();
                row_edit_bool = false;
            }});
@@ -61,7 +95,10 @@
            $.extend({finish:function(fid){
              if(confirm("是否己完成") == true) {
                $.get("admin.php?finish="+fid,function(date,status){
-                    if(status) window.location.reload();
+                   if(status == "success") {
+                       $.notify('己标记完成');
+                       setTimeout("window.location.reload();", 1000);
+                   }
                });
              }
              $.edit_cancel();
@@ -70,13 +107,23 @@
            $.extend({delete:function(did){
              if(confirm("是否删除") == true) {
                $.get("admin.php?deleted="+did,function(date,status){
-                    if(status) window.location.reload();
+                   if(status == "success") {
+                       $.notify('删除成功');
+                       setTimeout("window.location.reload();", 1000);
+                   }
                });
               }
               $.edit_cancel();
            }});
 
+           $.extend({submit:function(){
+              $("form").submit(function(e){
+                $.notify('更新成功');
+              });
+           }});
+
            var row_edit_bool = false;
+           var model_status = false;
            //第一列不进行排序(索引从0开始)
            $.tablesorter.defaults.headers = {
                0: {sorter: false},
@@ -93,12 +140,19 @@
                 sortRestart    : true
            });
 
-            $("html,table.tablesorter th").dblclick(function(){
+            $("table.tablesorter th").dblclick(function(){
+               if(! model_edit) return;
+
                if(row_edit_bool){
                    row_edit_bool = false;
                } else {
+                   $.notify('添加 Row');
                    $.get("admin.php",function(data,status){
-                       $("table.tablesorter").append("<td class=\"show_opt\" colspan=\"14\">"+data+"</td>");
+                       if(status != "success") {
+                           $.notify('添加失败');
+                       } else {
+                           $("table.tablesorter").append("<td class=\"show_opt\" colspan=\"14\">"+data+"</td>");
+                       }
                    });
                    row_edit_bool = true;
                }
@@ -106,6 +160,8 @@
             });
 
            $('table.tablesorter td').dblclick(function(){
+               if(! model_edit) return;
+
                var edit_row = $(this).parent();
                var show_opt = "<tr class=\"show_opt\"><td style=\"text-align:center\" colspan=\"14\">[<a href=\"admin.php?id="+edit_row.attr("id")+"\">修改</a>] [删除] [己完成]<td></tr>";
 
@@ -116,31 +172,52 @@
 
                    row_edit_bool = false;
                } else {
+                   first_td = edit_row.find("td").first();
+                   $.notify('编辑 Row: ['+edit_row.attr("id")+'] <BR>项目: ' + first_td.text()+"<BR>主题/功能: "+ first_td.next().text());
                    edit_row.find("td").each(function(){
                        $(this).hide();
                    });
 
                    $.get("admin.php?id="+edit_row.attr("id"),function(data,status){
-                       edit_row.append("<td class=\"show_opt\" colspan=\"14\">"+data+"</td>");
+                       if(status != "success") {
+                           $.notify('更新失败');
+                       } else {
+                           edit_row.append("<td class=\"show_opt\" colspan=\"14\">"+data+"</td>");
+                       }
                    });
                    row_edit_bool = true;
                }
-
                $('.show_opt').remove();
            });
-
+<?PHP
+        if(@$_SESSION["model_edit"] == 1) {
+            echo "model_edit = true;";
+            echo "$(\"#model_status\").text(\"编辑模式\");";
+        } else {
+            echo "model_edit = false;";
+            echo "$(\"#model_status\").text(\"只读模式\");";
+        }
+?>
        });
        </script>
     </HEAD>
     <BODY>
+        <div class="main_notify" id="main_notify"></div>
+        <div class="main_header" id="main_header"></div>
         <table id="project_status_list" class="tablesorter">
             <thead>
                 <tr>
-                <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center">项目状态</th>
+                <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center;height:60px;">项目状态</th>
                 </tr>
                 <tr>
                     <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>">
                         <div class="filter" style="width:100%;height:100%;">
+                        <div class="model_status" id="model_status" enable="0" onClick="$.model_switch();">
+                            只读模式
+                        </div>
+                        <div class="export">
+                            导出
+                        </div>
                                 Filter
                         </div>
                     </th>
