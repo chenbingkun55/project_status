@@ -11,8 +11,8 @@
        <meta http-equiv="pragma" content="no-cache" />
        <meta http-equiv="cache-control" content="no-cache" />
        <TITLE> <?PHP echo $config["SITE_NAME"] ?></TITLE>
-       <!--<link type="text/css" rel="stylesheet" href="public/css/theme.default.css" />-->
-       <link type="text/css" rel="stylesheet" href="public/css/blue/style.css" />
+       <link type="text/css" rel="stylesheet" href="public/css/theme.default.css" />
+       <!--<link type="text/css" rel="stylesheet" href="public/css/blue/style.css" />-->
        <link type="text/css" rel="stylesheet" href="public/css/common.css" />
        <link href="public/css/wdDatePicker/page.css" rel="stylesheet" type="text/css" />
        <link href="public/css/wdDatePicker/dp.css" rel="stylesheet" type="text/css" />
@@ -59,9 +59,12 @@
            }});
 
            $.extend({finish:function(fid){
+             if(confirm("是否己完成") == true) {
                $.get("admin.php?finish="+fid,function(date,status){
                     if(status) window.location.reload();
                });
+             }
+             $.edit_cancel();
            }});
 
            $.extend({delete:function(did){
