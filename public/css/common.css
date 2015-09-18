@@ -29,16 +29,20 @@ body {
     background-color: khaki;
 }
 
-.filter {
+.filter_plan {
     font-size: 14px;
     padding: 5px;
     float: left;
 }
 
+.filter {
+    display: none;
+}
+
 .admin {
     font-size: 14px;
     padding: 5px;
-    float: right;
+    float: left;
 }
 
 input.input_ajax {

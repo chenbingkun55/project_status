@@ -70,6 +70,22 @@ class mysql_lib {
         return $this->to_array($re);
     }
 
+    public function get_deleted(){
+        global $config;
+        $sql = "select * from ".$config["DB_TABLE"]." where deleted != 0";
+        $re = $this->query($sql);
+
+        return $this->to_array($re);
+    }
+
+    public function get_finish(){
+        global $config;
+        $sql = "select * from ".$config["DB_TABLE"]." where finish != 0";
+        $re = $this->query($sql);
+
+        return $this->to_array($re);
+    }
+
     public function filter(){
         global $config;
         $sql = "select * from ".$config["DB_TABLE"];

@@ -38,8 +38,12 @@ session_start();
     <BODY>
 <?PHP
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'):
+    if(strcmp(@$_REQUEST["filter"],"1") == 0){
+        echo "<form action=\"Search.php\" method=\"post\">";
+    } else {
+        echo "<form action=\"admin.php\" method=\"post\">";
+    }
 ?>
-        <form action="admin.php" method="post">
             <table style="background:red">
                 <tr>
                     <td class="name"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
@@ -48,12 +52,15 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     <td class="status">
                         <select class="select_ajax" name="status" style=\"width:100%\">
                         <?PHP
+                            if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                                echo "<option value=\"\" selected=\"selected\">空</option>";
+                            }
                             $status_array = array("提前","正常","延迟");
                             foreach($status_array as $status){
                                 if(strcmp($status,@$update["status"]) == 0){
                                     echo "<option value=\"".$status."\" selected=\"selected\">".$status."</option>";
                                 } else {
-                                    if(strcmp($status,"正常") == 0){
+                                    if(strcmp($status,"正常") == 0 && strcmp(@$_REQUEST["filter"],"1") != 0){
                                         echo "<option value=\"".$status."\" selected=\"selected\">".$status."</option>";
                                     } else {
                                         echo "<option value=\"".$status."\">".$status."</option>";
@@ -66,6 +73,9 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     <td class="stage">
                         <select class="select_ajax" name="stage">
                         <?PHP
+                            if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                                echo "<option value=\"\">空</option>";
+                            }
                             foreach($config["STAGE"] as $stage){
                                 if(strcmp(@$update["stage"],$stage) == 0){
                                     echo "<option value=\"".$stage."\" selected=\"selected\">".$stage."</option>";
@@ -86,6 +96,9 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         foreach($stage_array as $stage => $date){
                             echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
                             echo "<input id=\"plandate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
+                            if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
+                            }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
                                     echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"\">".$key."<BR>";
@@ -96,6 +109,9 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "</td>";
                             echo "<td class=\"stage_date\" style=\"background:".$date["RealColor"]."\">";
                             echo "<input id=\"realdate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
+                            if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".$date["RealDate"]."\">";
+                            }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
                                     echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" checked=\"checked\">".$key."<BR>";
@@ -120,10 +136,20 @@ if($id):
                         <INPUT type="BUTTON" value="删除" style="background:red;" onClick="$.delete(<?PHP echo @$update["id"] ?>)" />
 <?PHP
 else:
+
+    if(strcmp(@$_REQUEST["filter"],"1") == 0):
+?>
+                        <INPUT type="SUBMIT" value="搜索" />
+                        <INPUT type="RESET" value="清空" />
+                        <INPUT type="BUTTON" value="收起过滤面板" onClick="$.show_filter();" />
+
+<?PHP
+    else:
 ?>
                         <INPUT type="SUBMIT" value="添加" />
                         <INPUT type="BUTTON" value="取消" onClick="$.edit_cancel();" />
 <?PHP
+    endif;
 endif;
 ?>
                     </td>
@@ -234,6 +260,10 @@ endif;
             foreach($config["STAGE"] as $stage){
                echo "$('#plandate_".$stage."').datePicker();\n";
                echo "$('#realdate_".$stage."').datePicker();\n";
+                if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                   echo "$('#planenddate_".$stage."').datePicker();\n";
+                   echo "$('#realenddate_".$stage."').datePicker();\n";
+                }
             }
         ?>
        });

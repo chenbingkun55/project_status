@@ -2,8 +2,26 @@
 session_start();
 
     include "lib.php";
-    $tbl_data = $mysql->get_in_process();
-    if(@$_REQUEST['export']) {
+
+    switch(trim($_REQUEST["status"])) {
+        case "all":
+            $tbl_data = $mysql->get_all();
+            break;
+        case "deleted":
+            $tbl_data = $mysql->get_deleted();
+            break;
+        case "finish":
+            $tbl_data = $mysql->get_finish();
+            break;
+        case "in_process":
+            $tbl_data = $mysql->get_in_process();
+            break;
+        default :
+            $tbl_data = $mysql->get_in_process();
+    }
+
+    // 导出Html表格到 Excel
+    if(strcmp(@$_REQUEST['export'],"1") == 0) {
         header("Content-type:application/vnd.ms-excel");
         header("Content-Disposition:attachment;filename=export_project_status.xlsx");
     }
@@ -27,14 +45,25 @@ session_start();
        <script>
 
        $(document).ready(function(){
-           $.extend({notify:function(notify_text){
+           $.extend({notify:function(notify_text,time=2500){
                $("#main_notify").html(notify_text);
                $("#main_notify").stop().fadeIn();
-               $("#main_notify").fadeOut(2500);
+               $("#main_notify").fadeOut(time);
            }});
 
            $.extend({export:function(){
-               window.open("index.php?export=1");
+<?PHP
+            if(trim($_REQUEST["status"])){
+               echo "window.open(window.location.href + \"&export=1\");";
+            } else {
+               echo "window.open(window.location.href + \"?export=1\");";
+
+            }
+?>
+           }});
+
+           $.extend({show_filter:function(){
+               $("#filter").stop().slideToggle(1000);
            }});
 
            $.extend({model_switch:function(){
@@ -52,7 +81,7 @@ session_start();
                } else {
                     $.get("model_status.php?enable=1",function(data,status){
                        if(status == "success") {
-                           $.notify("进入编辑模式<BR>添加: 双击表格标头.<BR>修改: 双击要编辑的行.");
+                           $.notify("进入编辑模式<BR>[添加]: 双击表格标头.<BR>[修改]: 双击要编辑的行.",20000);
                            model_edit = true;
                            $("#model_status").attr("enable","1");
                            $("#model_status").text("编辑模式");
@@ -161,6 +190,8 @@ session_start();
                $('.show_opt').remove();
             });
 
+            $("#filter").load('admin.php?filter=1');
+
            $('table.tablesorter td').dblclick(function(){
                if(! model_edit) return;
 
@@ -214,17 +245,23 @@ session_start();
                 <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center;height:60px;">项目状态</th>
                 </tr>
 <?PHP
-    if(! @$_REQUEST['export']):
+    if(strcmp(@$_REQUEST['export'],"1") != 0):
 ?>
                 <tr>
                     <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>">
                     <div class="function">
-                        <div class="filter">
+                        <div class="filter_plan">
                             <div class="jquery">
                                 jquery
                             </div>
                             <div class="php">
-                                php
+                                <a href="index.php?status=in_process">进行中</a>&nbsp;
+                                <a href="index.php?status=all">所有</a>
+                                <a href="index.php?status=finish">己完成</a>&nbsp;
+                                <a href="index.php?status=deleted">己删除</a>&nbsp;
+                                <span onClick="$.show_filter();">打开过滤面板</span>&nbsp;
+                                <div id="filter" class="filter">
+                                </div>
                             </div>
                         </div>
 <?PHP
