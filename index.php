@@ -3,7 +3,7 @@ session_start();
 
     include "lib.php";
 
-    switch(trim($_REQUEST["status"])) {
+    switch(trim(@$_REQUEST["status"])) {
         case "all":
             $tbl_data = $mysql->get_all();
             break;
@@ -23,7 +23,7 @@ session_start();
     // 导出Html表格到 Excel
     if(strcmp(@$_REQUEST['export'],"1") == 0) {
         header("Content-type:application/vnd.ms-excel");
-        header("Content-Disposition:attachment;filename=export_project_status.xlsx");
+        header("Content-Disposition:attachment;filename=export_project_status.xls");
     }
 ?>
 <!DOCTYPE HTML>
@@ -33,8 +33,14 @@ session_start();
        <meta http-equiv="cache-control" content="no-cache" />
        <TITLE> <?PHP echo $config["SITE_NAME"] ?></TITLE>
        <!--<link type="text/css" rel="stylesheet" href="public/css/theme.default.css" />-->
+<?PHP
+    if(strcmp(@$_REQUEST['export'],"1") != 0):
+?>
        <link type="text/css" rel="stylesheet" href="public/css/blue/style.css" />
        <link type="text/css" rel="stylesheet" href="public/css/common.css" />
+<?PHP
+    endif;
+?>
 
        <!--<script type="text/javascript" src="public/js/jquery-1.2.6.min.js"></script>-->
        <script type="text/javascript" src="public/js/jquery-2.1.4.min.js"></script>
@@ -45,15 +51,15 @@ session_start();
        <script>
 
        $(document).ready(function(){
-           $.extend({notify:function(notify_text,time=2500){
+           $.extend({notify:function(notify_text){
                $("#main_notify").html(notify_text);
                $("#main_notify").stop().fadeIn();
-               $("#main_notify").fadeOut(time);
+               $("#main_notify").fadeOut(2500);
            }});
 
            $.extend({export:function(){
 <?PHP
-            if(trim($_REQUEST["status"])){
+            if(trim(@$_REQUEST["status"])){
                echo "window.open(window.location.href + \"&export=1\");";
             } else {
                echo "window.open(window.location.href + \"?export=1\");";
@@ -89,7 +95,7 @@ session_start();
                } else {
                     $.get("model_status.php?enable=1",function(data,status){
                        if(status == "success") {
-                           $.notify("进入编辑模式<BR>[添加]: 双击表格标头.<BR>[修改]: 双击要编辑的行.",20000);
+                           $.notify("进入编辑模式<BR>[添加]: 双击表格标头.<BR>[修改]: 双击要编辑的行.");
                            model_edit = true;
                            $("#model_status").attr("enable","1");
                            $("#model_status").text("编辑模式");

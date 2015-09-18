@@ -1,7 +1,8 @@
 <?PHP
 $config = array();
 $config["SITE_NAME"] = "Project Status";
-$config["ALLOW_IP"] = array("127.0.0.1","192.168.23.100","192.168.23.96");
+// 添加可编辑IP权限.
+$config["ALLOW_IP"] = array("127.0.0.1","192.168.23.100","192.168.23.96","192.168.23.83");
 // DB 配置
 $config["DB_HOST"] = "localhost";
 $config["DB_USER"] = "root";
@@ -137,19 +138,19 @@ class mysql_lib {
         $tmp_array = array();
         $stage_json = new stage_date_json();
 
-        $id = trim($_REQUEST['id']);
-        $name = trim($_REQUEST['name']);
-        $theme_function = trim($_REQUEST['theme_function']);
-        $version = trim($_REQUEST['version']);
-        $status = trim($_REQUEST['status']);
-        $stage = trim($_REQUEST['stage']);
-        $note = trim($_REQUEST['note']);
+        $id = trim(@$_REQUEST['id']);
+        $name = trim(@$_REQUEST['name']);
+        $theme_function = trim(@$_REQUEST['theme_function']);
+        $version = trim(@$_REQUEST['version']);
+        $status = trim(@$_REQUEST['status']);
+        $stage = trim(@$_REQUEST['stage']);
+        $note = trim(@$_REQUEST['note']);
 
         foreach($config["STAGE"] as $item){
-            @$plan_date = trim($_REQUEST["PlanDate-".$item]) ? trim($_REQUEST["PlanDate-".$item]) : "N\A";
-            @$plan_color = trim($_REQUEST["PlanColor-".$item]) ? trim($_REQUEST["PlanColor-".$item]) : "N\A";
-            @$real_date = trim($_REQUEST["RealDate-".$item]) ? trim($_REQUEST["RealDate-".$item]) : "N\A";
-            @$real_color = trim($_REQUEST["RealColor-".$item]) ? trim($_REQUEST["RealColor-".$item]) : "N\A";
+            @$plan_date = trim(@$_REQUEST["PlanDate-".$item]) ? trim(@$_REQUEST["PlanDate-".$item]) : "N\A";
+            @$plan_color = trim(@$_REQUEST["PlanColor-".$item]) ? trim(@$_REQUEST["PlanColor-".$item]) : "N\A";
+            @$real_date = trim(@$_REQUEST["RealDate-".$item]) ? trim(@$_REQUEST["RealDate-".$item]) : "N\A";
+            @$real_color = trim(@$_REQUEST["RealColor-".$item]) ? trim(@$_REQUEST["RealColor-".$item]) : "N\A";
 
             $tmp_array[$item] = array('PlanDate' => $plan_date,'PlanColor' => $plan_color,'RealDate' => $real_date,'RealColor' => $real_color);
         }

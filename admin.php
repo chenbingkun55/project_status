@@ -3,9 +3,9 @@ session_start();
 
     include "lib.php";
 
-    @$finish = trim($_REQUEST['finish']);
-    @$deleted = trim($_REQUEST['deleted']);
-    @$id = trim($_REQUEST['id']);
+    $finish = trim(@$_REQUEST['finish']);
+    $deleted = trim(@$_REQUEST['deleted']);
+    $id = trim(@$_REQUEST['id']);
 
     if(!empty($finish)){
         $re = $mysql->finish($finish);
@@ -32,7 +32,7 @@ session_start();
        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
        <meta http-equiv="pragma" content="no-cache" />
        <meta http-equiv="cache-control" content="no-cache" />
-       <TITLE> <?PHP echo $config["SITE_NAME"] ?></TITLE>
+       <TITLE> <?PHP echo @$config["SITE_NAME"] ?></TITLE>
        <link type="text/css" rel="stylesheet" href="public/css/common.css" />
     </HEAD>
     <BODY>
