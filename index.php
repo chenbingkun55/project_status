@@ -22,8 +22,6 @@ session_start();
 
     // 导出Html表格到 Excel
     if(strcmp(@$_REQUEST['export'],"1") == 0) {
-    $tbl_data = $mysql->get_in_process();
-    if(@$_REQUEST['export']) {
         header("Content-type:application/vnd.ms-excel");
         header("Content-Disposition:attachment;filename=export_project_status.xlsx");
     }
