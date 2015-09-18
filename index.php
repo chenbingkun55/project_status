@@ -98,6 +98,7 @@ session_start();
                            model_edit = false;
                            $("#model_status").attr("enable","0");
                            $("#model_text").text("只读模式");
+                           $.edit_cancel();
                        }
                     });
                } else {
