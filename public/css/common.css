@@ -35,15 +35,28 @@ body {
     float: left;
 }
 
+.admin {
+    font-size: 14px;
+    padding: 5px;
+    float: right;
+}
+
+.export {
+    font-size: 14px;
+    padding: 5px;
+    float: right;
+}
+
+.model_text {
+    font-size: 14px;
+    padding: 5px;
+    float: right;
+}
+
 .filter {
     display: none;
 }
 
-.admin {
-    font-size: 14px;
-    padding: 5px;
-    float: left;
-}
 
 input.input_ajax {
     margin: 0px;

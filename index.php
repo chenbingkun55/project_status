@@ -2,22 +2,25 @@
 session_start();
 
     include "lib.php";
-
-    switch(trim(@$_REQUEST["status"])) {
-        case "all":
-            $tbl_data = $mysql->get_all();
-            break;
-        case "deleted":
-            $tbl_data = $mysql->get_deleted();
-            break;
-        case "finish":
-            $tbl_data = $mysql->get_finish();
-            break;
-        case "in_process":
-            $tbl_data = $mysql->get_in_process();
-            break;
-        default :
-            $tbl_data = $mysql->get_in_process();
+    if(strcmp(@$_REQUEST["filter"],"1") != 0) {
+        switch(trim(@$_REQUEST["status"])) {
+            case "all":
+                $tbl_data = $mysql->get_all();
+                break;
+            case "deleted":
+                $tbl_data = $mysql->get_deleted();
+                break;
+            case "finish":
+                $tbl_data = $mysql->get_finish();
+                break;
+            case "in_process":
+                $tbl_data = $mysql->get_in_process();
+                break;
+            default :
+                $tbl_data = $mysql->get_in_process();
+        }
+    } else {
+        $tbl_data = $mysql->filter();
     }
 
     // 导出Html表格到 Excel
@@ -69,11 +72,16 @@ session_start();
            }});
 
            $.extend({show_filter:function(){
-               $("#filter").load('admin.php?filter=1').slideDown(300);
+               if(row_edit_bool) {
+                   $.notify("<span style=\"color: red; font-size: 24px;\">表格编辑中,请先取消编辑.</span>");
+                   return;
+               }
+
+               $("#filter").load('admin.php?filter=1').slideToggle(500);
            }});
 
            $.extend({hide_filter:function(){
-               $("#filter").stop().empty().slideUp(2000);
+               $("#filter").empty().slideUp(1000);
            }});
 
            $.extend({export:function(){
@@ -89,7 +97,7 @@ session_start();
                            $.notify("进入只读模式");
                            model_edit = false;
                            $("#model_status").attr("enable","0");
-                           $("#model_status").text("只读模式");
+                           $("#model_text").text("只读模式");
                        }
                     });
                } else {
@@ -98,7 +106,7 @@ session_start();
                            $.notify("进入编辑模式<BR>[添加]: 双击表格标头.<BR>[修改]: 双击要编辑的行.");
                            model_edit = true;
                            $("#model_status").attr("enable","1");
-                           $("#model_status").text("编辑模式");
+                           $("#model_text").text("编辑模式");
                        }
                     });
                }
@@ -190,6 +198,7 @@ session_start();
 
                if(row_edit_bool){
                    row_edit_bool = false;
+                   $.edit_cancel();
                } else {
                    $.notify('添加 Row');
                    $.get("admin.php",function(data,status){
@@ -200,6 +209,7 @@ session_start();
                        }
                    });
                    row_edit_bool = true;
+                   $.hide_filter();
                }
                $('.show_opt').remove();
             });
@@ -232,6 +242,7 @@ session_start();
                        }
                    });
                    row_edit_bool = true;
+                   $.hide_filter();
                }
                $('.show_opt').remove();
            });
@@ -239,11 +250,11 @@ session_start();
         if(@$_SESSION["model_edit"] == 1) {
             echo "model_edit = true;";
             echo "$(\"#model_status\").attr(\"enable\",\"1\");";
-            echo "$(\"#model_status\").text(\"编辑模式\");";
+            echo "$(\"#model_text\").text(\"编辑模式\");";
         } else {
             echo "model_edit = false;";
             echo "$(\"#model_status\").attr(\"enable\",\"0\");";
-            echo "$(\"#model_status\").text(\"只读模式\");";
+            echo "$(\"#model_text\").text(\"只读模式\");";
         }
 ?>
        });
@@ -264,33 +275,38 @@ session_start();
                     <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>">
                     <div class="function">
                         <div class="filter_plan">
-                            <div class="jquery">
-                                jquery
-                            </div>
                             <div class="php">
+                                <span onClick="$.show_filter();"><img src="public/img/filter_24x24.png" style="vertical-align: middle;"></span>&nbsp;
                                 <a href="index.php?status=in_process">进行中</a>&nbsp;
                                 <a href="index.php?status=all">所有</a>
                                 <a href="index.php?status=finish">己完成</a>&nbsp;
                                 <a href="index.php?status=deleted">己删除</a>&nbsp;
-                                <span onClick="$.show_filter();">打开过滤面板</span>&nbsp;
-                                <div id="filter" class="filter">
-                                </div>
                             </div>
+                        </div>
+                        <div class="export" onClick="$.export();">
+                            导出 Excel
                         </div>
 <?PHP
     if($allow->pass()):
 ?>
-                        <div class="admin">
-                            <div class="model_status" id="model_status" enable="0" onClick="$.model_switch();">
-                                只读模式
-                            </div>
-                            <div class="export" onClick="$.export();">
-                                导出 Excel
-                            </div>
+                        <div class="model_text" id="model_text" onClick="$.model_switch();">
+                            只读模式
+                        </div>
 <?PHP
     endif;
 ?>
+                    </div>
+<?PHP
+    if($allow->pass()):
+?>
+                    <div class="admin">
+                        <div class="model_status" id="model_status" enable="0">
                         </div>
+                    </div>
+<?PHP
+    endif;
+?>
+                    <div id="filter" class="filter">
                     </div>
                     </th>
                 </tr>
@@ -322,19 +338,27 @@ session_start();
             <tbody>
                 <?PHP
                     foreach($tbl_data as $row){
+                        if(strcmp($row["deleted"],0) != 0) {
+                            $tag = "<td><del>%s</del></td>";
+                        } else if(strcmp($row["finish"],0) != 0) {
+                            $tag = "<td><i><u>%s</u></i></td>";
+                        }else {
+                            $tag = "<td>%s</td>";
+                        }
                         echo "<tr id=\"".$row["id"]."\">";
-                        echo "<td>".$row["name"]."</td>";
-                        echo "<td>".$row['theme_function']."</td>";
-                        echo "<td>".$row['version']."</td>";
-                        echo "<td>".$row['status']."</td>";
-                        echo "<td>".$row['stage']."</td>";
+                        printf($tag,$row["name"]);
+                        printf($tag,$row["theme_function"]);
+                        printf($tag,$row["version"]);
+                        printf($tag,$row["status"]);
+                        printf($tag,$row["stage"]);
 
                         $stage_data = $stage_json->decode($row['stage_date_json']);
+                        $stage_tag = "<td style=\"background:%s\">%s</td>";
                         foreach($config["STAGE"] as $stage){
-                            echo "<td style=\"background:".$stage_data[$stage]["PlanColor"]."\">".$stage_data[$stage]["PlanDate"]."</td>";
-                            echo "<td style=\"background:".$stage_data[$stage]["RealColor"]."\">".$stage_data[$stage]["RealDate"]."</td>";
+                            printf($stage_tag,$stage_data[$stage]["PlanColor"],$stage_data[$stage]["PlanDate"]);
+                            printf($stage_tag,$stage_data[$stage]["RealColor"],$stage_data[$stage]["RealDate"]);
                         }
-                        echo "<td>".$row['note']."</td>";
+                        echo "<td>".$row["note"]."</td>";
                     echo "</tr>";
                     }
                 ?>

@@ -39,7 +39,7 @@ session_start();
 <?PHP
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'):
     if(strcmp(@$_REQUEST["filter"],"1") == 0){
-        echo "<form action=\"Search.php\" method=\"post\">";
+        echo "<form action=\"index.php?filter=1\" method=\"post\">";
     } else {
         echo "<form action=\"admin.php\" method=\"post\">";
     }
@@ -102,7 +102,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
                             echo "<input id=\"plandate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
-                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"PlanEndDate\">";
+                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
@@ -115,7 +115,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "<td class=\"stage_date\" style=\"background:".$date["RealColor"]."\">";
                             echo "<input id=\"realdate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
-                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"RealEndDate\">";
+                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
@@ -127,7 +127,21 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "</td>";
                         }
 ?>
-                    <td class="note"><textarea class="textarea_ajax" rows="5" name="note"><?PHP echo @$update["note"]?></textarea></td>
+                    <td class="note">
+<?PHP
+    if(strcmp(@$_REQUEST["filter"],"1") == 0):
+?>
+                    
+                        <input type="checkbox" name="note_empty" style="vertical-align: middle"> 备注为空
+                        <textarea class="textarea_ajax" rows="5" name="note"><?PHP echo @$update["note"]?></textarea>
+<?PHP
+else:
+?>
+                        <textarea class="textarea_ajax" rows="5" name="note"><?PHP echo @$update["note"]?></textarea>
+<?PHP
+endif;
+?>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="14" style="text-align:center"><INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />
