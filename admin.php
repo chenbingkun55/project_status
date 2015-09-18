@@ -40,6 +40,9 @@ session_start();
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'):
     if(strcmp(@$_REQUEST["filter"],"1") == 0){
         echo "<form action=\"index.php?filter=1\" method=\"post\">";
+        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"include_deleted\" style=\"vertical-align: middle\">包括己删除]</span>";
+        echo "&nbsp;&nbsp;";
+        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"include_finish\" style=\"vertical-align: middle\">包括己完成]</span>";
     } else {
         echo "<form action=\"admin.php\" method=\"post\">";
     }

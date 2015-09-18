@@ -141,6 +141,8 @@ class mysql_lib {
         $stage = trim(@$_REQUEST['stage']);
         $note = trim(@$_REQUEST['note']);
         $note_empty = trim(@$_REQUEST['note_empty']);
+        $include_deleted = trim(@$_REQUEST['include_deleted']);
+        $include_finish = trim(@$_REQUEST['include_finish']);
 
         foreach($config["STAGE"] as $item){
             $plan_date = trim(@$_REQUEST["PlanDate-".$item]) ? trim(@$_REQUEST["PlanDate-".$item]) : "";
@@ -163,7 +165,16 @@ class mysql_lib {
             $from_array[$item] = array('PlanDate' => $plan_date,'PlanEndDate' => $plan_enddate, 'PlanColor' => $plan_color,'RealDate' => $real_date,'RealEndDate' => $real_enddate, 'RealColor' => $real_color);
         }
 
+
         $where = "";
+        if(empty($include_deleted)) {
+            $where .= " AND deleted = 0 ";
+        }
+
+        if(empty($include_finish)) {
+            $where .= " AND finish = 0 ";
+        }
+
         $where .= empty($name) ? "" : " AND name = '".$name."'";
         $where .= empty($theme_function) ? "" : " AND theme_function = '".$theme_function."'";
         $where .= empty($version) ? "" : " AND version = '".$version."'";
