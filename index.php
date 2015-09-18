@@ -22,6 +22,8 @@ session_start();
 
     // 导出Html表格到 Excel
     if(strcmp(@$_REQUEST['export'],"1") == 0) {
+    $tbl_data = $mysql->get_in_process();
+    if(@$_REQUEST['export']) {
         header("Content-type:application/vnd.ms-excel");
         header("Content-Disposition:attachment;filename=export_project_status.xlsx");
     }
@@ -64,6 +66,10 @@ session_start();
 
            $.extend({show_filter:function(){
                $("#filter").stop().slideToggle(1000);
+           }});
+
+           $.extend({export:function(){
+               window.open("index.php?export=1");
            }});
 
            $.extend({model_switch:function(){
