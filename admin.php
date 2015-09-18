@@ -87,7 +87,12 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         </select>
                     </td>
 <?PHP
-                        $stage_array = $stage_json->stage_date_init();
+                        if(strcmp(@$_REQUEST["filter"],"1") == 0){
+                            $stage_array = $stage_json->stage_date_init(true);
+                        } else {
+                            $stage_array = $stage_json->stage_date_init();
+                        }
+
                         if($id) {
                             $stage_array = $stage_json->decode(@$update['stage_date_json']);
                         }
@@ -97,7 +102,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
                             echo "<input id=\"plandate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
-                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
+                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"PlanEndDate\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
@@ -110,7 +115,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "<td class=\"stage_date\" style=\"background:".$date["RealColor"]."\">";
                             echo "<input id=\"realdate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
-                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".$date["RealDate"]."\">";
+                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"RealEndDate\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
@@ -141,7 +146,7 @@ else:
 ?>
                         <INPUT type="SUBMIT" value="搜索" />
                         <INPUT type="RESET" value="清空" />
-                        <INPUT type="BUTTON" value="收起过滤面板" onClick="$.show_filter();" />
+                        <INPUT type="BUTTON" value="收起过滤面板" onClick="$.hide_filter();" />
 
 <?PHP
     else:
@@ -213,7 +218,8 @@ else:
                 </tr>
 <?PHP
                         $colors = array("无" => "","red" => "red","green" => "green","yellow" => "yellow");
-                        foreach($stage_json->stage_date_init() as $stage => $date){
+                        $stage_array = $stage_json->stage_date_init();
+                        foreach($stage_array as $stage => $date){
                             echo "<tr><td>".$stage."计划:</td>";
                             echo "<td>";
                             echo "<input id=\"plandate_".$stage."\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";

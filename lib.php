@@ -185,12 +185,17 @@ class stage_date_json{
         return "";
     }
 
-    public function stage_date_init(){
+    public function stage_date_init($search=false){
         global $config;
         $tmp_array = array();
 
         foreach($config["STAGE"] as $stage){
-            $tmp_array[$stage] = array('PlanDate' => 'N/A','PlanColor' => '','RealDate' => 'N/A','RealColor' => '');
+                $tmp_array[$stage] = array('PlanDate' => 'PlanStartDate','PlanColor' => '','RealDate' => 'RealStartDate','RealColor' => '');
+            if($search){
+                $tmp_array[$stage] = array('PlanDate' => 'PlanStartDate','PlanColor' => '','RealDate' => 'RealStartDate','RealColor' => '');
+            } else {
+                $tmp_array[$stage] = array('PlanDate' => 'N/A','PlanColor' => '','RealDate' => 'N/A','RealColor' => '');
+            }
         }
 
         return $tmp_array;

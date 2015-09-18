@@ -63,7 +63,11 @@ session_start();
            }});
 
            $.extend({show_filter:function(){
-               $("#filter").stop().slideToggle(1000);
+               $("#filter").load('admin.php?filter=1').slideDown(300);
+           }});
+
+           $.extend({hide_filter:function(){
+               $("#filter").stop().empty().slideUp(2000);
            }});
 
            $.extend({export:function(){
@@ -194,7 +198,6 @@ session_start();
                $('.show_opt').remove();
             });
 
-            $("#filter").load('admin.php?filter=1');
 
            $('table.tablesorter td').dblclick(function(){
                if(! model_edit) return;
