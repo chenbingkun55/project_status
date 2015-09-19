@@ -376,7 +376,7 @@ session_start();
             <thead>
                 <tr>
                 <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center;height:60px;">
-                    <h1><a href="http://bzb.igg.com"><img class="logo" src="http://192.168.23.220/food_order/public/images/BZBee%20logo%20100X100.png" /></a>&nbsp;BZBee Productions 项目状态查询系统</h1>
+                    <h1><a href="http://bzb.igg.com"><img class="logo" src="http://192.168.23.220/food_order/public/images/BZBee%20logo%20100X100.png" /></a>&nbsp;BZBee Productions 项目状态</h1>
                 </th>
                 </tr>
 <?PHP
