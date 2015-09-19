@@ -44,7 +44,7 @@ session_start();
 <?PHP
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'):
     if(strcmp(@$_REQUEST["filter"],"1") == 0){
-        $update = $_SESSION["filter_array"];
+        $update = @$_SESSION["filter_array"];
 
         echo "<form action=\"index.php?filter=1\" method=\"post\">";
         echo "<div class=\"filter_term\">";
@@ -102,7 +102,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     </td>
 <?PHP
                         if(strcmp(@$_REQUEST["filter"],"1") == 0){
-                            if(empty(@$update['stage_date_json'])) {
+                            if(empty($update['stage_date_json'])) {
                                 $stage_array = $stage_json->stage_date_init(true);
                             } else {
                                 $stage_array = $stage_json->decode(@$update['stage_date_json']);
@@ -120,7 +120,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
                             echo "<input id=\"plandate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
-                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".$date["PlanEndDate"]."\">";
+                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".@$date["PlanEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
@@ -133,7 +133,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "<td class=\"stage_date\" style=\"background:".$date["RealColor"]."\">";
                             echo "<input id=\"realdate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
-                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".$date["RealEndDate"]."\">";
+                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".@$date["RealEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
@@ -155,26 +155,26 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 if($id):
 ?>
 <?PHP
-                if($update["finish"] == 0 && $update[deleted] == 0){
+                if(@$update["finish"] == 0 && @$update["deleted"] == 0){
                         echo "<INPUT type=\"SUBMIT\" value=\"更新\" onClick=\"$.submit();\" />";
                         echo "<INPUT type=\"BUTTON\" value=\"取消\" onClick=\"$.edit_cancel();\" />";
                         echo "---";
                 }
 
-                if($update["finish"] == 0 ){
-                    if($update["deleted"] == 0 ){
-                        echo "<INPUT type=\"BUTTON\" value=\"标记[己完成]\" style=\"background:red;\" onClick=\"$.finish(".$update["id"].");\" />";
+                if(@$update["finish"] == 0 ){
+                    if(@$update["deleted"] == 0 ){
+                        echo "<INPUT type=\"BUTTON\" value=\"标记[己完成]\" style=\"background:red;\" onClick=\"$.finish(".@$update["id"].");\" />";
                     }
                 } else {
-                    echo "<INPUT type=\"BUTTON\" value=\"标记[未完成]\" style=\"background:yellow;\" onClick=\"$.finish(".$update["id"].",true);\" />";
+                    echo "<INPUT type=\"BUTTON\" value=\"标记[未完成]\" style=\"background:yellow;\" onClick=\"$.finish(".@$update["id"].",true);\" />";
                 }
 
-                if($update["deleted"] == 0 ){
-                    if($update["finish"] == 0 ){
-                        echo "<INPUT type=\"BUTTON\" value=\"删除\" style=\"background:red;\" onClick=\"$.delete(".$update["id"].");\" />";
+                if(@$update["deleted"] == 0 ){
+                    if(@$update["finish"] == 0 ){
+                        echo "<INPUT type=\"BUTTON\" value=\"删除\" style=\"background:red;\" onClick=\"$.delete(".@$update["id"].");\" />";
                     }
                 } else {
-                    echo "<INPUT type=\"BUTTON\" value=\"还原\" style=\"background:yellow;\" onClick=\"$.delete(".$update["id"].",true);\" />";
+                    echo "<INPUT type=\"BUTTON\" value=\"还原\" style=\"background:yellow;\" onClick=\"$.delete(".@$update["id"].",true);\" />";
                 }
 
 else:

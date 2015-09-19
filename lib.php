@@ -100,7 +100,7 @@ class mysql_lib {
         $sql = "select name from ".$config["DB_TABLE"]." group by name";
         $re = $this->query($sql);
 
-        return $this->to_array($re,true);
+        return $this->to_array($re);
     }
 
     public function find($id){
@@ -140,7 +140,7 @@ class mysql_lib {
         $return_array = array();
         $stage_json = new stage_date_json();
 
-        if(empty(@$_REQUEST["filter"])){
+        if(empty($_REQUEST["filter"])){
             $name = $_SESSION["filter_array"]["name"];
             $theme_function = $_SESSION["filter_array"]["theme_function"];
             $version = $_SESSION["filter_array"]["version"];
