@@ -187,89 +187,99 @@ class mysql_lib {
 
         $re = $this->query($sql);
         //echo $sql;
-        
+
         $get_db_array = $this->to_array($re);
         // 暂时不能搜索 Stage Date数据.
-        $return_array = $get_db_array;
-        //// 过滤 Stage Date 数据
-        //foreach($get_db_array as $row) {
-            //// add_bool 决定是否返回.
-            //$add_bool = false;
-            //$db_array = $stage_json->decode($row['stage_date_json']);
-            ////print_r($db_array);
+        //$return_array = $get_db_array;
+        // 过滤 Stage Date 数据
 
-            //foreach($config["STAGE"] as $item){
-                ////// plan 时间比对.
-                ////$db_plan_time = strtotime($db_array[$item]["PlanDate"]);
-                ////$from_plan_st = strtotime($from_array[$item]["PlanDate"]);
-                ////$from_plan_et = strtotime($from_array[$item]["PlanEndDate"]);
+        foreach($get_db_array as $row) {
+            $add_bool = true;  // add_bool 全局决定是否添加到返回数组.
+            $colors = array(); // 各 stage Color 比较。
+            $date_array = array(); // 各 stage Color 比较。
+            $db_array = $stage_json->decode($row['stage_date_json']);
+            //print_r($db_array);
 
-                ////if(! empty($from_plan_st) && ! empty($from_plan_et)) {
-                    ////$add_bool = ($from_plan_st < $db_plan_time && $db_plan_time > $from_plan_et) ? true : false;
-                ////}
+            foreach($config["STAGE"] as $item){
+                $colors[$item.".plan"] = true;  // stage color 判断.
+                $colors[$item.".real"] = true;  // stage color 判断.
+                $date_array[$item.".plan"] = true;  // stage date判断.
+                $date_array[$item.".real"] = true;  // stage date判断.
 
-                ////if(! empty($from_plan_st) && empty($from_plan_et)) {
-                    ////$add_bool = ($from_plan_st < $db_plan_time) ? true : false;
-                ////}
+                // plan 时间比对.
+                $db_plan_time = strtotime($db_array[$item]["PlanDate"]);
+                $from_plan_st = strtotime($from_array[$item]["PlanDate"]);
+                $from_plan_et = strtotime($from_array[$item]["PlanEndDate"]);
 
-                ////if(empty($from_plan_st) && ! empty($from_plan_et)) {
-                    ////$add_bool = ($db_plan_time > $from_plan_et) ? true : false;
-                ////}
+                if(! empty($from_plan_st) && ! empty($from_plan_et)) {
+                    $date_array[$item.".plan"] = ($from_plan_st <= $db_plan_time && $db_plan_time <= $from_plan_et) ? true : false;
+                } else if(! empty($from_plan_st) && empty($from_plan_et)) {
+                    $date_array[$item.".plan"] = ($from_plan_st <= $db_plan_time) ? true : false;
+                } else if(empty($from_plan_st) && ! empty($from_plan_et)) {
+                    $date_array[$item.".plan"] = ($db_plan_time <= $from_plan_et) ? true : false;
+                }
 
-                ////if(empty($from_plan_st) && empty($from_plan_et)) {
-                    ////$add_bool = true;
-                ////}
+                // real 时间比对.
+                $db_real_time = strtotime($db_array[$item]["RealDate"]);
+                $from_real_st = strtotime($from_array[$item]["RealDate"]);
+                $from_real_et = strtotime($from_array[$item]["RealEndDate"]);
 
-                ////// real 时间比对.
-                ////$db_real_time = strtotime($db_array[$item]["RealDate"]);
-                ////$from_real_st = strtotime($from_array[$item]["RealDate"]);
-                ////$from_real_et = strtotime($from_array[$item]["RealEndDate"]);
+                if(! empty($from_real_st) && ! empty($from_real_et)) {
+                    $date_array[$item.".real"] = ($from_real_st <= $db_real_time && $db_real_time <= $from_real_et) ? true : false;
+                } else if(! empty($from_real_st) && empty($from_real_et)) {
+                    $date_array[$item.".real"] = ($from_real_st <= $db_real_time) ? true : false;
+                } else if(empty($from_real_st) && ! empty($from_real_et)) {
+                    $date_array[$item.".real"] = ($db_real_time <= $from_real_et) ? true : false;
+                }
 
-                ////if(! empty($from_real_st) && ! empty($from_real_et)) {
-                    ////$add_bool = ($from_real_st < $db_real_time && $db_real_time > $from_real_et) ? true : false;
-                ////}
+                // plan 颜色比对.
+                $db_plan_color = $db_array[$item]["PlanColor"];
+                $from_plan_color = $from_array[$item]["PlanColor"];
 
-                ////if(! empty($from_real_st) && empty($from_real_et)) {
-                    ////$add_bool = ($from_real_st < $db_real_time) ? true : false;
-                ////}
+                if(! empty($from_plan_color)){
+                    $colors[$item.".plan"]  = (strcmp($from_plan_color,$db_plan_color) == 0) ? true : false;
+                }
 
-                ////if(empty($from_real_st) && ! empty($from_real_et)) {
-                    ////$add_bool = ($db_real_time > $from_real_et) ? true : false;
-                ////}
+                // real 颜色比对.
+                $db_real_color = $db_array[$item]["RealColor"];
+                $from_real_color = $from_array[$item]["RealColor"];
 
-                ////if(empty($from_real_st) && empty($from_real_et)) {
-                    ////$add_bool = true;
-                ////}
+                if(! empty($from_real_color)){
+                    $colors[$item.".real"]  = (strcmp($from_real_color,$db_real_color) == 0) ? true : false;
+                }
+            }
 
-                //// plan 颜色比对.
-                //$db_plan_color = $db_array[$item]["PlanColor"];
-                //$from_plan_color = $from_array[$item]["PlanColor"];
+            // 判断颜色是否相等。
+            foreach($colors as $color) {
+                if(! $color){
+                    $add_bool = false;
+                }
+            }
 
-                //if(! empty($from_plan_color) && ! empty($db_plan_color) && strcmp($db_plan_color,"N\A") != 0) {
-                    //$add_bool = (strcmp($from_plan_color,$db_plan_color) == 0) ? true : false;
-                //}
+            // 判断是间否相等。
+            foreach($date_array as $date) {
+                if(! $date){
+                    $add_bool = false;
+                }
+            }
 
-                //// real 颜色比对.
-                //$db_real_color = $db_array[$item]["RealColor"];
-                //$from_real_color = $from_array[$item]["RealColor"];
+            // 将适合条件的放到 返回数组
+            if($add_bool) {
+                array_push($return_array,$row);
+            }
+        }
 
-                //if(! empty($from_real_color) && ! empty($db_real_color) && strcmp($db_real_color,"N\A") != 0) {
-                    //$add_bool = (strcmp($from_real_color,$db_real_color) == 0) ? true : false;
-                //}
-            //}
-
-            //// 将适合条件的放到 返回数组
-            //if($add_bool) {
-                //array_push($return_array,$row);
-            //}
-        //}
-        //echo "<BR>get_db_array<BR>";
-        //print_r($get_db_array);
-        //echo "<BR>from_array<BR>";
-        //print_r($from_array);
-        //echo "<BR>return_array<BR>";
-        //print_r($return_array);
-
+        // 保存 SESSION Filter 面板数据。
+        $_SESSION["filter_array"]["name"] = $name;
+        $_SESSION["filter_array"]["theme_function"] = $theme_function;
+        $_SESSION["filter_array"]["version"] = $version;
+        $_SESSION["filter_array"]["Status"] = $status;
+        $_SESSION["filter_array"]["stage"] = $stage;
+        $_SESSION["filter_array"]["note"] = $note;
+        $_SESSION["filter_array"]["include_deleted"] = $include_deleted;
+        $_SESSION["filter_array"]["include_finish"] = $include_finish;
+        $_SESSION["filter_array"]["note_empty"] = $note_empty;
+        $_SESSION["filter_array"]["stage_date_json"] = $stage_json->encode($from_array);
         return $return_array;
     }
 

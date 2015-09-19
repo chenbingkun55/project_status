@@ -39,10 +39,14 @@ session_start();
 <?PHP
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'):
     if(strcmp(@$_REQUEST["filter"],"1") == 0){
+        $update = $_SESSION["filter_array"];
+
         echo "<form action=\"index.php?filter=1\" method=\"post\">";
-        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"include_deleted\" style=\"vertical-align: middle\">包括己删除]</span>";
+        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"include_deleted\" style=\"vertical-align: middle\" ".(empty($update["include_deleted"]) ? "" : "checked").">包括己删除]</span>";
         echo "&nbsp;&nbsp;";
-        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"include_finish\" style=\"vertical-align: middle\">包括己完成]</span>";
+        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"include_finish\" style=\"vertical-align: middle\" ".(empty($update["include_finish"]) ? "" : "checked").">包括己完成]</span>";
+        echo "&nbsp;&nbsp;";
+        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"note_empty\" style=\"vertical-align: middle\" ".(empty($update["note_empty"]) ? "" : "checked")."> 备注为空]</span>";
     } else {
         echo "<form action=\"admin.php\" method=\"post\">";
     }
@@ -50,13 +54,13 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
             <table style="background:red">
                 <tr>
                     <td class="name"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
-                    <td class="theme_function"><INPUT class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
-                    <td class="version"><INPUT class="input_ajax" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
+                    <td class="theme_function"><INPUT id="theme_function" class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
+                    <td class="version"><INPUT id="version" class="input_ajax" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
                     <td class="status">
-                        <select class="select_ajax" name="status" style=\"width:100%\">
+                        <select id="status" class="select_ajax" name="status" style=\"width:100%\">
                         <?PHP
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
-                                echo "<option value=\"\" selected=\"selected\">空</option>";
+                                echo "<option value=\"\">空</option>";
                             }
                             $status_array = array("提前","正常","延迟");
                             foreach($status_array as $status){
@@ -74,7 +78,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         </select>
                     </td>
                     <td class="stage">
-                        <select class="select_ajax" name="stage">
+                        <select id="stage" class="select_ajax" name="stage">
                         <?PHP
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
                                 echo "<option value=\"\">空</option>";
@@ -91,7 +95,11 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     </td>
 <?PHP
                         if(strcmp(@$_REQUEST["filter"],"1") == 0){
-                            $stage_array = $stage_json->stage_date_init(true);
+                            if(empty(@$update['stage_date_json'])) {
+                                $stage_array = $stage_json->stage_date_init(true);
+                            } else {
+                                $stage_array = $stage_json->decode(@$update['stage_date_json']);
+                            }
                         } else {
                             $stage_array = $stage_json->stage_date_init();
                         }
@@ -105,7 +113,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
                             echo "<input id=\"plandate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
-                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"\">";
+                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".$date["PlanEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
@@ -118,7 +126,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "<td class=\"stage_date\" style=\"background:".$date["RealColor"]."\">";
                             echo "<input id=\"realdate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
                             if(strcmp(@$_REQUEST["filter"],"1") == 0) {
-                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"\">";
+                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".$date["RealEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
@@ -131,19 +139,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         }
 ?>
                     <td class="note">
-<?PHP
-    if(strcmp(@$_REQUEST["filter"],"1") == 0):
-?>
-                    
-                        <input type="checkbox" name="note_empty" style="vertical-align: middle"> 备注为空
-                        <textarea class="textarea_ajax" rows="5" name="note"><?PHP echo @$update["note"]?></textarea>
-<?PHP
-else:
-?>
-                        <textarea class="textarea_ajax" rows="5" name="note"><?PHP echo @$update["note"]?></textarea>
-<?PHP
-endif;
-?>
+                        <textarea id="note" class="textarea_ajax" rows="5" name="note"><?PHP echo @$update["note"]?></textarea>
                     </td>
                 </tr>
                 <tr>
@@ -162,7 +158,7 @@ else:
     if(strcmp(@$_REQUEST["filter"],"1") == 0):
 ?>
                         <INPUT type="SUBMIT" value="搜索" />
-                        <INPUT type="RESET" value="清空" />
+                        <INPUT type="RESET" value="清空" onClick="$.clean_filter_plan();"/>
                         <INPUT type="BUTTON" value="收起过滤面板" onClick="$.hide_filter();" />
 
 <?PHP
@@ -281,11 +277,14 @@ endif;
        $(document).ready(function(){
         <?PHP
             foreach($config["STAGE"] as $stage){
-               echo "$('#plandate_".$stage."').datePicker();\n";
-               echo "$('#realdate_".$stage."').datePicker();\n";
                 if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                   echo "$('#plandate_".$stage."').datePicker();\n";
+                   echo "$('#realdate_".$stage."').datePicker();\n";
                    echo "$('#planenddate_".$stage."').datePicker();\n";
                    echo "$('#realenddate_".$stage."').datePicker();\n";
+                } else {
+                   echo "$('#plandate_".$stage."').datePicker();\n";
+                   echo "$('#realdate_".$stage."').datePicker();\n";
                 }
             }
         ?>

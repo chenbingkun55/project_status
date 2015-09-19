@@ -23,6 +23,8 @@ session_start();
         $tbl_data = $mysql->filter();
     }
 
+    print_r($_SESSION["filter_array"]);
+
     // 导出Html表格到 Excel
     if(strcmp(@$_REQUEST['export'],"1") == 0) {
         header("Content-type:application/vnd.ms-excel");
@@ -58,6 +60,18 @@ session_start();
                $("#main_notify").html(notify_text);
                $("#main_notify").stop().fadeIn();
                $("#main_notify").fadeOut(2500);
+           }});
+
+           $.extend({clean_filter_plan:function(notify_text){
+                $("#name").attr("value","");
+                $("#theme_function").attr("value","");
+                $("#version").attr("value","");
+                $("#status").find("option[text='空']").attr("selectd",true);
+                $("#stage").find("option[text='空']").attr("selectd",true);
+                $("#note").text("");
+                $("#include_deleted").attr("value","");
+                $("#include_finish").attr("value","");
+                $("#note_empty").attr("value","");
            }});
 
            $.extend({export:function(){
