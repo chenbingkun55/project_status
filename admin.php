@@ -17,6 +17,11 @@ session_start();
         die("deleted .");
     }
 
+    if(!empty($deleted)){
+        $re = $mysql->deleted($deleted);
+        die("deleted .");
+    }
+
     if(!empty($id)){
         @$update = $mysql->find($id);
     }
@@ -42,16 +47,18 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
         $update = $_SESSION["filter_array"];
 
         echo "<form action=\"index.php?filter=1\" method=\"post\">";
-        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"include_deleted\" style=\"vertical-align: middle\" ".(empty($update["include_deleted"]) ? "" : "checked").">包括己删除]</span>";
+        echo "<div class=\"filter_term\">";
+        echo "<span><input id=\"include_deleted\" type=\"checkbox\" name=\"include_deleted\" style=\"vertical-align: middle\"".(empty($update["include_deleted"]) ? "" : "checked").">包括己删除</span>";
         echo "&nbsp;&nbsp;";
-        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"include_finish\" style=\"vertical-align: middle\" ".(empty($update["include_finish"]) ? "" : "checked").">包括己完成]</span>";
+        echo "<span><input id=\"include_finish\" type=\"checkbox\" name=\"include_finish\" style=\"vertical-align: middle\" ".(empty($update["include_finish"]) ? "" : "checked").">包括己完成</span>";
         echo "&nbsp;&nbsp;";
-        echo "<span style=\"font-size: 14px;\">[<input type=\"checkbox\" name=\"note_empty\" style=\"vertical-align: middle\" ".(empty($update["note_empty"]) ? "" : "checked")."> 备注为空]</span>";
+        echo "<span><input id=\"note_empty\" type=\"checkbox\" name=\"note_empty\" style=\"vertical-align: middle\" ".(empty($update["note_empty"]) ? "" : "checked")."> 备注为空</span>";
+        echo "</div>";
     } else {
         echo "<form action=\"admin.php\" method=\"post\">";
     }
 ?>
-            <table style="background:red">
+            <table style="background:red;">
                 <tr>
                     <td class="name"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
                     <td class="theme_function"><INPUT id="theme_function" class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
@@ -117,9 +124,9 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
-                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"\">".$key."<BR>";
+                                    echo "<input class=\"stage_color\" type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"\">".$key."<BR>";
                                 } else {
-                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\">".$key."<BR>";
+                                    echo "<input class=\"stage_color\" type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\">".$key."<BR>";
                                 }
                             }
                             echo "</td>";
@@ -130,9 +137,9 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
-                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" checked=\"checked\">".$key."<BR>";
+                                    echo "<input class=\"stage_color\" type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" checked=\"checked\">".$key."<BR>";
                                 } else {
-                                    echo "<input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\">".$key."<BR>";
+                                    echo "<input class=\"stage_color\" type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\">".$key."<BR>";
                                 }
                             }
                             echo "</td>";
@@ -147,12 +154,29 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 <?PHP
 if($id):
 ?>
-                        <INPUT type="SUBMIT" value="更新" onClick="$.submit();" />
-                        <INPUT type="BUTTON" value="取消" onClick="$.edit_cancel();" />
-                        ---
-                        <INPUT type="BUTTON" value="己完成" style="background:red;" onClick="$.finish(<?PHP echo @$update["id"] ?>)" />
-                        <INPUT type="BUTTON" value="删除" style="background:red;" onClick="$.delete(<?PHP echo @$update["id"] ?>)" />
 <?PHP
+                if($update["finish"] == 0 && $update[deleted] == 0){
+                        echo "<INPUT type=\"SUBMIT\" value=\"更新\" onClick=\"$.submit();\" />";
+                        echo "<INPUT type=\"BUTTON\" value=\"取消\" onClick=\"$.edit_cancel();\" />";
+                        echo "---";
+                }
+
+                if($update["finish"] == 0 ){
+                    if($update["deleted"] == 0 ){
+                        echo "<INPUT type=\"BUTTON\" value=\"标记[己完成]\" style=\"background:red;\" onClick=\"$.finish(".$update["id"].");\" />";
+                    }
+                } else {
+                    echo "<INPUT type=\"BUTTON\" value=\"标记[未完成]\" style=\"background:yellow;\" onClick=\"$.finish(".$update["id"].",true);\" />";
+                }
+
+                if($update["deleted"] == 0 ){
+                    if($update["finish"] == 0 ){
+                        echo "<INPUT type=\"BUTTON\" value=\"删除\" style=\"background:red;\" onClick=\"$.delete(".$update["id"].");\" />";
+                    }
+                } else {
+                    echo "<INPUT type=\"BUTTON\" value=\"还原\" style=\"background:yellow;\" onClick=\"$.delete(".$update["id"].",true);\" />";
+                }
+
 else:
 
     if(strcmp(@$_REQUEST["filter"],"1") == 0):

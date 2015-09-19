@@ -2,8 +2,11 @@
 session_start();
 
     include "lib.php";
-    if(strcmp(@$_REQUEST["filter"],"1") != 0) {
-        switch(trim(@$_REQUEST["status"])) {
+    $status = trim(@$_REQUEST["status"]);
+    $filter = (strcmp(@$_REQUEST["filter"],"1") == 0) ? true : false;
+
+    if(! $filter) {
+        switch($status) {
             case "all":
                 $tbl_data = $mysql->get_all();
                 break;
@@ -22,8 +25,6 @@ session_start();
     } else {
         $tbl_data = $mysql->filter();
     }
-
-    print_r($_SESSION["filter_array"]);
 
     // 导出Html表格到 Excel
     if(strcmp(@$_REQUEST['export'],"1") == 0) {
@@ -66,12 +67,27 @@ session_start();
                 $("#name").attr("value","");
                 $("#theme_function").attr("value","");
                 $("#version").attr("value","");
-                $("#status").find("option[text='空']").attr("selectd",true);
-                $("#stage").find("option[text='空']").attr("selectd",true);
+                $("#status").find("option:selected").removeAttr("selected");
+                $("#stage").find("option:selected").removeAttr("selected");
+                $(".stage_color").removeAttr("checked");
                 $("#note").text("");
-                $("#include_deleted").attr("value","");
-                $("#include_finish").attr("value","");
-                $("#note_empty").attr("value","");
+                $("#include_deleted").removeAttr("checked");
+                $("#include_finish").removeAttr("checked");
+                $("#note_empty").removeAttr("checked");
+<?PHP
+                foreach($config["STAGE"] as $stage){
+                    echo "$(\"#plandate_".$stage."\").attr(\"value\",\"\");";
+                    echo "$(\"#planenddate_".$stage."\").attr(\"value\",\"\");";
+                    echo "$(\"#realdate_".$stage."\").attr(\"value\",\"\");";
+                    echo "$(\"#realenddate_".$stage."\").attr(\"value\",\"\");";
+                }
+?>
+                $.get("common.php?opt=clean_filter",function(data,status){
+                    if(status == "success") {
+                        $.notify("清空过滤面板条件完成");
+                    }
+                });
+            
            }});
 
            $.extend({export:function(){
@@ -106,22 +122,22 @@ session_start();
                // 默认打开只读模式
                var read_only = $("#model_status").attr("enable");
                if(read_only == 1){
-                    $.get("model_status.php?enable=0",function(data,status){
+                    $.get("common.php?opt=model_status&enable=0",function(data,status){
                        if(status == "success") {
+                           $.edit_cancel();
                            $.notify("进入只读模式");
                            model_edit = false;
                            $("#model_status").attr("enable","0");
-                           $("#model_text").text("只读模式");
-                           $.edit_cancel();
+                           $("#model_text").html("<button class=\"minimal\">只读模式</button>");
                        }
                     });
                } else {
-                    $.get("model_status.php?enable=1",function(data,status){
+                    $.get("common.php?opt=model_status&enable=1",function(data,status){
                        if(status == "success") {
                            $.notify("进入编辑模式<BR>[添加]: 双击表格标头.<BR>[修改]: 双击要编辑的行.");
                            model_edit = true;
                            $("#model_status").attr("enable","1");
-                           $("#model_text").text("编辑模式");
+                           $("#model_text").html("<button class=\"cupid-green\">编辑模式</button>");
                        }
                     });
                }
@@ -131,7 +147,7 @@ session_start();
                  var $list_name = $("<ul class='autocomplete'></ul>").hide().insertAfter("#name");
                  var $name = $('#name');
 
-                 $.getJSON("get_names.php",function(items,status){
+                 $.getJSON("common.php?opt=get_names",function(items,status){
                       $list_name.empty();
 
                       $.each(items, function(i, item)
@@ -160,8 +176,15 @@ session_start();
                row_edit_bool = false;
            }});
 
-           $.extend({finish:function(fid){
-             if(confirm("是否己完成") == true) {
+           $.extend({finish:function(fid,unfinish){
+             if(unfinish == true) {
+               $.get("admin.php?finish="+fid,function(date,status){
+                   if(status == "success") {
+                       $.notify('己标记未完成');
+                       setTimeout("window.location.reload();", 1000);
+                   }
+               });
+             } else {
                $.get("admin.php?finish="+fid,function(date,status){
                    if(status == "success") {
                        $.notify('己标记完成');
@@ -172,15 +195,24 @@ session_start();
              $.edit_cancel();
            }});
 
-           $.extend({delete:function(did){
-             if(confirm("是否删除") == true) {
+           $.extend({delete:function(did,revert){
+             if(revert == true) {
                $.get("admin.php?deleted="+did,function(date,status){
                    if(status == "success") {
-                       $.notify('删除成功');
+                       $.notify('还原成功');
                        setTimeout("window.location.reload();", 1000);
                    }
                });
-              }
+             } else {
+                 if(confirm("是否删除") == true) {
+                   $.get("admin.php?deleted="+did,function(date,status){
+                       if(status == "success") {
+                           $.notify('删除成功');
+                           setTimeout("window.location.reload();", 1000);
+                       }
+                   });
+                  }
+             }
               $.edit_cancel();
            }});
 
@@ -262,14 +294,37 @@ session_start();
                $('.show_opt').remove();
            });
 <?PHP
+        switch($status) {
+            case "all":
+                echo "$(\"#all\").attr(\"class\",\"cupid-green\");";
+                break;
+            case "deleted":
+                echo "$(\"#deleted\").attr(\"class\",\"cupid-green\");";
+                break;
+            case "finish":
+                echo "$(\"#finish\").attr(\"class\",\"cupid-green\");";
+                break;
+            case "in_process":
+                echo "$(\"#in_process\").attr(\"class\",\"cupid-green\");";
+                break;
+            default :
+                echo "$(\"#in_process\").attr(\"class\",\"cupid-green\");";
+        }
+
+        if($filter) {
+            echo "$(\"#filter_img\").attr(\"src\",\"public/img/filter_yes_24x24.png\");";
+            echo "$(\"#in_process\").attr(\"class\",\"minimal\");";
+            echo "$.show_filter();";
+        }
+
         if(@$_SESSION["model_edit"] == 1) {
             echo "model_edit = true;";
             echo "$(\"#model_status\").attr(\"enable\",\"1\");";
-            echo "$(\"#model_text\").text(\"编辑模式\");";
+            echo "$(\"#model_text\").html(\"<button class='cupid-green'>编辑模式</button>\");";
         } else {
             echo "model_edit = false;";
             echo "$(\"#model_status\").attr(\"enable\",\"0\");";
-            echo "$(\"#model_text\").text(\"只读模式\");";
+            echo "$(\"#model_text\").html(\"<button class='minimal'>只读模式</button>\");";
         }
 ?>
        });
@@ -277,52 +332,54 @@ session_start();
     </HEAD>
     <BODY>
         <div class="main_notify" id="main_notify"></div>
-        <div class="main_header" id="main_header"></div>
+        </div>
         <table id="project_status_list" class="tablesorter">
             <thead>
                 <tr>
-                <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center;height:60px;">项目状态</th>
+                <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center;height:60px;">
+                    <h1><img class="logo" src="http://192.168.23.220/food_order/public/images/BZBee%20logo%20100X100.png" />&nbsp;BZBee Productions 项目状态查询系统</h1>
+                </th>
                 </tr>
 <?PHP
     if(strcmp(@$_REQUEST['export'],"1") != 0):
 ?>
                 <tr>
                     <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>">
-                    <div class="function">
-                        <div class="filter_plan">
-                            <div class="php">
-                                <span onClick="$.show_filter();"><img src="public/img/filter_24x24.png" style="vertical-align: middle;"></span>&nbsp;
-                                <a href="index.php?status=in_process">进行中</a>&nbsp;
-                                <a href="index.php?status=all">所有</a>
-                                <a href="index.php?status=finish">己完成</a>&nbsp;
-                                <a href="index.php?status=deleted">己删除</a>&nbsp;
+                        <div class="function">
+                            <div class="filter_plan">
+                                <div class="php">
+                                    <span onClick="$.show_filter();"><img id="filter_img" src="public/img/filter_24x24.png" style="vertical-align: middle;"></span>&nbsp;
+                                    <a href="index.php?status=in_process"><button id="in_process" class="minimal">进行中</button></a>&nbsp;
+                                    <a href="index.php?status=all"><button id="all" class="minimal">所有</button></a>
+                                    <a href="index.php?status=finish"><button id="finish" class="minimal">己完成</button></a>&nbsp;
+                                    <a href="index.php?status=deleted"><button id="deleted" class="minimal">己删除</button></a>&nbsp;
+                                </div>
+                            </div>
+                            <div class="export" onClick="$.export();">
+                                <button class="minimal">导出 Excel</button>
+                            </div>
+<?PHP
+        if($allow->pass()):
+?>
+                            <div class="model_text" id="model_text" onClick="$.model_switch();">
+                                <button class="minimal">只读模式</button>
+                            </div>
+<?PHP
+        endif;
+?>
+                        </div>
+<?PHP
+        if($allow->pass()):
+?>
+                        <div class="admin">
+                            <div class="model_status" id="model_status" enable="0">
                             </div>
                         </div>
-                        <div class="export" onClick="$.export();">
-                            导出 Excel
+    <?PHP
+        endif;
+    ?>
+                        <div id="filter" class="filter">
                         </div>
-<?PHP
-    if($allow->pass()):
-?>
-                        <div class="model_text" id="model_text" onClick="$.model_switch();">
-                            只读模式
-                        </div>
-<?PHP
-    endif;
-?>
-                    </div>
-<?PHP
-    if($allow->pass()):
-?>
-                    <div class="admin">
-                        <div class="model_status" id="model_status" enable="0">
-                        </div>
-                    </div>
-<?PHP
-    endif;
-?>
-                    <div id="filter" class="filter">
-                    </div>
                     </th>
                 </tr>
 <?PHP

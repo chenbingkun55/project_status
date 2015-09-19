@@ -113,14 +113,21 @@ class mysql_lib {
 
     public function finish($id){
         global $config;
-        $sql = "UPDATE ".$config["DB_TABLE"]." SET finish = 1  where id = ".$id;
+
+        $finish_row = $this->find($id);
+        $finish = ($finish_row["finish"] != 0) ? 0 : 1;
+        $sql = "UPDATE ".$config["DB_TABLE"]." SET finish = ".$finish." where id = ".$id;
 
         return $this->query_one($sql);
     }
 
     public function deleted($id){
         global $config;
-        $sql = "UPDATE ".$config["DB_TABLE"]." SET deleted = 1  where id = ".$id;
+
+        $delete_row = $this->find($id);
+        $deleted = ($delete_row["deleted"] != 0) ? 0 : 1;
+
+        $sql = "UPDATE ".$config["DB_TABLE"]." SET deleted = ".$deleted." where id = ".$id;
 
         return $this->query_one($sql);
     }
@@ -133,36 +140,49 @@ class mysql_lib {
         $return_array = array();
         $stage_json = new stage_date_json();
 
-        $id = trim(@$_REQUEST['id']);
-        $name = trim(@$_REQUEST['name']);
-        $theme_function = trim(@$_REQUEST['theme_function']);
-        $version = trim(@$_REQUEST['version']);
-        $status = trim(@$_REQUEST['status']);
-        $stage = trim(@$_REQUEST['stage']);
-        $note = trim(@$_REQUEST['note']);
-        $note_empty = trim(@$_REQUEST['note_empty']);
-        $include_deleted = trim(@$_REQUEST['include_deleted']);
-        $include_finish = trim(@$_REQUEST['include_finish']);
+        if(empty(@$_REQUEST["filter"])){
+            $name = $_SESSION["filter_array"]["name"];
+            $theme_function = $_SESSION["filter_array"]["theme_function"];
+            $version = $_SESSION["filter_array"]["version"];
+            $status = $_SESSION["filter_array"]["status"];
+            $stage = $_SESSION["filter_array"]["stage"];
+            $note = $_SESSION["filter_array"]["note"];
+            $include_deleted = $_SESSION["filter_array"]["include_deleted"];
+            $include_finish = $_SESSION["filter_array"]["include_finish"];
+            $note_empty = $_SESSION["filter_array"]["note_empty"];
+            $from_array = $stage_json->decode($_SESSION["filter_array"]["stage_date_json"]);
+        } else {
+            $id = trim(@$_REQUEST['id']);
+            $name = trim(@$_REQUEST['name']);
+            $theme_function = trim(@$_REQUEST['theme_function']);
+            $version = trim(@$_REQUEST['version']);
+            $status = trim(@$_REQUEST['status']);
+            $stage = trim(@$_REQUEST['stage']);
+            $note = trim(@$_REQUEST['note']);
+            $note_empty = trim(@$_REQUEST['note_empty']);
+            $include_deleted = trim(@$_REQUEST['include_deleted']);
+            $include_finish = trim(@$_REQUEST['include_finish']);
 
-        foreach($config["STAGE"] as $item){
-            $plan_date = trim(@$_REQUEST["PlanDate-".$item]) ? trim(@$_REQUEST["PlanDate-".$item]) : "";
-            $plan_enddate = trim(@$_REQUEST["PlanEndDate-".$item]) ? trim(@$_REQUEST["PlanEndDate-".$item]) : "";
+            foreach($config["STAGE"] as $item){
+                $plan_date = trim(@$_REQUEST["PlanDate-".$item]) ? trim(@$_REQUEST["PlanDate-".$item]) : "";
+                $plan_enddate = trim(@$_REQUEST["PlanEndDate-".$item]) ? trim(@$_REQUEST["PlanEndDate-".$item]) : "";
 
-            //if(strtotime($plan_date) > strtotime($plan_enddate)){
-                //die("搜索的装间 StartDate 不能大于 EndDate");
-            //}
+                //if(strtotime($plan_date) > strtotime($plan_enddate)){
+                    //die("搜索的装间 StartDate 不能大于 EndDate");
+                //}
 
-            $plan_color = trim(@$_REQUEST["PlanColor-".$item]) ? trim(@$_REQUEST["PlanColor-".$item]) : "";
+                $plan_color = trim(@$_REQUEST["PlanColor-".$item]) ? trim(@$_REQUEST["PlanColor-".$item]) : "";
 
 
-            $real_date = trim(@$_REQUEST["RealDate-".$item]) ? trim(@$_REQUEST["RealDate-".$item]) : "";
-            $real_enddate = trim(@$_REQUEST["RealEndDate-".$item]) ? trim(@$_REQUEST["RealEndDate-".$item]) : "";
-            //if(strtotime($real_date) > strtotime($real_enddate)){
-                //die("Filter StartDate 不能大于 EndDate");
-            //}
-            $real_color = trim(@$_REQUEST["RealColor-".$item]) ? trim(@$_REQUEST["RealColor-".$item]) : "";
+                $real_date = trim(@$_REQUEST["RealDate-".$item]) ? trim(@$_REQUEST["RealDate-".$item]) : "";
+                $real_enddate = trim(@$_REQUEST["RealEndDate-".$item]) ? trim(@$_REQUEST["RealEndDate-".$item]) : "";
+                //if(strtotime($real_date) > strtotime($real_enddate)){
+                    //die("Filter StartDate 不能大于 EndDate");
+                //}
+                $real_color = trim(@$_REQUEST["RealColor-".$item]) ? trim(@$_REQUEST["RealColor-".$item]) : "";
 
-            $from_array[$item] = array('PlanDate' => $plan_date,'PlanEndDate' => $plan_enddate, 'PlanColor' => $plan_color,'RealDate' => $real_date,'RealEndDate' => $real_enddate, 'RealColor' => $real_color);
+                $from_array[$item] = array('PlanDate' => $plan_date,'PlanEndDate' => $plan_enddate, 'PlanColor' => $plan_color,'RealDate' => $real_date,'RealEndDate' => $real_enddate, 'RealColor' => $real_color);
+            }
         }
 
 
@@ -273,7 +293,7 @@ class mysql_lib {
         $_SESSION["filter_array"]["name"] = $name;
         $_SESSION["filter_array"]["theme_function"] = $theme_function;
         $_SESSION["filter_array"]["version"] = $version;
-        $_SESSION["filter_array"]["Status"] = $status;
+        $_SESSION["filter_array"]["status"] = $status;
         $_SESSION["filter_array"]["stage"] = $stage;
         $_SESSION["filter_array"]["note"] = $note;
         $_SESSION["filter_array"]["include_deleted"] = $include_deleted;
