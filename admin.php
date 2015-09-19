@@ -82,7 +82,8 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
     if(strcmp(@$_REQUEST["filter"],"1") == 0){
         $update = @$_SESSION["filter_array"];
 
-        echo "<form action=\"index.php?filter=1\" method=\"post\">";
+        echo "<form action=\"index.php\" method=\"post\">";
+	 echo "<input type=\"hidden\" name=\"filter_submit\" value=\"1\">";
         echo "<div class=\"filter_term\">";
         echo "<span><input id=\"include_deleted\" type=\"checkbox\" name=\"include_deleted\" style=\"vertical-align: middle\"".(empty($update["include_deleted"]) ? "" : "checked").">包括己删除</span>";
         echo "&nbsp;&nbsp;";

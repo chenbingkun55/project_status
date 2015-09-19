@@ -176,7 +176,7 @@ class mysql_lib {
         $return_array = array();
         $stage_json = new stage_date_json();
 
-        if(empty($_REQUEST["filter"])){
+        if(strcmp($_REQUEST["filter"],"1") == 0){
             $name = $_SESSION["filter_array"]["name"];
             $theme_function = $_SESSION["filter_array"]["theme_function"];
             $version = $_SESSION["filter_array"]["version"];
@@ -325,17 +325,18 @@ class mysql_lib {
             }
         }
 
-        // 保存 SESSION Filter 面板数据。
-        $_SESSION["filter_array"]["name"] = $name;
-        $_SESSION["filter_array"]["theme_function"] = $theme_function;
-        $_SESSION["filter_array"]["version"] = $version;
-        $_SESSION["filter_array"]["status"] = $status;
-        $_SESSION["filter_array"]["stage"] = $stage;
-        $_SESSION["filter_array"]["note"] = $note;
-        $_SESSION["filter_array"]["include_deleted"] = $include_deleted;
-        $_SESSION["filter_array"]["include_finish"] = $include_finish;
-        $_SESSION["filter_array"]["note_empty"] = $note_empty;
-        $_SESSION["filter_array"]["stage_date_json"] = $stage_json->encode($from_array);
+	// 保存 SESSION Filter 面板数据。
+	$_SESSION["filter_array"]["name"] = $name;
+	$_SESSION["filter_array"]["theme_function"] = $theme_function;
+	$_SESSION["filter_array"]["version"] = $version;
+	$_SESSION["filter_array"]["status"] = $status;
+	$_SESSION["filter_array"]["stage"] = $stage;
+	$_SESSION["filter_array"]["note"] = $note;
+	$_SESSION["filter_array"]["include_deleted"] = $include_deleted;
+	$_SESSION["filter_array"]["include_finish"] = $include_finish;
+	$_SESSION["filter_array"]["note_empty"] = $note_empty;
+	$_SESSION["filter_array"]["stage_date_json"] = $stage_json->encode($from_array);
+
         return $return_array;
     }
 

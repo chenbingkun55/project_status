@@ -42,10 +42,12 @@ session_start();
 
     include "lib.php";
     $status = trim(@$_REQUEST["status"]);
-    $filter = (strcmp(@$_REQUEST["filter"],"1") == 0) ? true : false;
+    $filter = (strcmp(@$_REQUEST["filter"],"1") == 0 || strcmp(@$_REQUEST["filter_submit"],"1") == 0) ? true : false;
 
-    if(! $filter) {
-        switch($status) {
+    if($filter) {
+        $tbl_data = $mysql->filter();
+    } else {
+	switch($status) {
             case "all":
                 $tbl_data = $mysql->get_all();
                 break;
@@ -61,8 +63,6 @@ session_start();
             default :
                 $tbl_data = $mysql->get_in_process();
         }
-    } else {
-        $tbl_data = $mysql->filter();
     }
 
     // 导出Html表格到 Excel
@@ -133,10 +133,11 @@ session_start();
 <?PHP
             if(trim(@$_REQUEST["status"])){
                echo "window.open(window.location.href + \"&export=1\");";
+            } else if($filter) {
+               echo "window.open(window.location.href + \"?export=1&filter=1\");";
             } else {
-               echo "window.open(window.location.href + \"?export=1\");";
-
-            }
+  		echo "window.open(window.location.href + \"?export=1\");";
+	     }
 ?>
            }});
 
@@ -153,9 +154,6 @@ session_start();
                $("#filter").empty().slideUp(1000);
            }});
 
-           $.extend({export:function(){
-               window.open("index.php?export=1");
-           }});
 
            $.extend({model_switch:function(){
                // 默认打开只读模式
@@ -450,7 +448,7 @@ session_start();
                 <?PHP
                     foreach($tbl_data as $row){
                         if(strcmp($row["deleted"],0) != 0) {
-                            $tag = "<td><del>%s</del></td>";
+                            $tag = "<td><s><del>%s</del></s></td>";
                         } else if(strcmp($row["finish"],0) != 0) {
                             $tag = "<td><i><u>%s</u></i></td>";
                         }else {
