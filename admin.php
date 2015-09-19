@@ -1,4 +1,40 @@
 <?PHP
+/**
+* Author: @-ChenBk <chenbingkun55@163.com> 2015-09-19 16:30
+* Version Info ------------------------------------------------
+4432a9b * 项目只有一个时,get_names()不能正常工作
+:100644 100644 621223d... a3b4997... M	admin.php
+e225fb6 * 发布版本 0.1
+:100644 100644 9d4de96... 621223d... M	admin.php
+78a822c * 时间过滤，Color过滤功能。
+:100644 100644 1ae9672... 9d4de96... M	admin.php
+316058b * filter 过滤己删除和己完成.
+:100644 100644 e21c40a... 1ae9672... M	admin.php
+14d3915 * filter 完成一半, stage date 这块搜索比较困难.
+:100644 100644 7064228... e21c40a... M	admin.php
+366c0ce * 修改Export Excel时不加载css样式.
+:100644 100644 30472b6... 7064228... M	admin.php
+c184bcd * 修复搜索面板id和添加修改冲突BUG
+:100644 100644 28c0b8b... 30472b6... M	admin.php
+3c503c1 * 添加搜垵面板。
+:100644 100644 2f3fa09... 28c0b8b... M	admin.php
+cebfe57 * 添加index.php导出Excel功能。
+:100644 100644 f69078e... 2f3fa09... M	admin.php
+b0e12bd * 添加index.php改出Excel。
+:100644 100644 f69078e... 2f3fa09... M	admin.php
+04cc415 * 使用Session保存编辑状态
+:100644 100644 f20485b... f69078e... M	admin.php
+49c6355 + jquery.datepicker 日期选择器。 + get_names.php 取项目名称下拉列表。
+:100644 100644 59f483f... f20485b... M	admin.php
+598952c * 基本功能完成.
+:100644 100644 995e216... 59f483f... M	admin.php
+f04540a * 加载 tablestore * 添加、删除、修改功能
+:000000 100644 0000000... 995e216... A	admin.php
+* -------------------------------------------------------------
+*
+*
+**/
+
 session_start();
 
     include "lib.php";

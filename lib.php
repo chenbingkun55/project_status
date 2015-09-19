@@ -1,4 +1,40 @@
 <?PHP
+/**
+* Author: @-ChenBk <chenbingkun55@163.com> 2015-09-19 16:30
+* Version Info ------------------------------------------------
+4432a9b * 项目只有一个时,get_names()不能正常工作
+:100644 100644 5e41ac6... 4e94b09... M	lib.php
+e225fb6 * 发布版本 0.1
+:100644 100644 a478a44... 5e41ac6... M	lib.php
+78a822c * 时间过滤，Color过滤功能。
+:100644 100644 ab520e2... a478a44... M	lib.php
+316058b * filter 过滤己删除和己完成.
+:100644 100644 500ee9d... ab520e2... M	lib.php
+14d3915 * filter 完成一半, stage date 这块搜索比较困难.
+:100644 100644 5c8398d... 500ee9d... M	lib.php
+366c0ce * 修改Export Excel时不加载css样式.
+:100644 100644 4cccd69... 5c8398d... M	lib.php
+c184bcd * 修复搜索面板id和添加修改冲突BUG
+:100644 100644 b0347eb... 4cccd69... M	lib.php
+3c503c1 * 添加搜垵面板。
+:100644 100644 a557d9d... b0347eb... M	lib.php
+cebfe57 * 添加index.php导出Excel功能。
+:100644 100644 aa27f3f... a557d9d... M	lib.php
+b0e12bd * 添加index.php改出Excel。
+:100644 100644 aa27f3f... a557d9d... M	lib.php
+49c6355 + jquery.datepicker 日期选择器。 + get_names.php 取项目名称下拉列表。
+:100644 100644 18c9375... aa27f3f... M	lib.php
+598952c * 基本功能完成.
+:100644 100644 190ae5e... 18c9375... M	lib.php
+f04540a * 加载 tablestore * 添加、删除、修改功能
+:100644 100644 eea5fea... 190ae5e... M	lib.php
+5d6ab00 * 初始化Dev
+:000000 100644 0000000... eea5fea... A	lib.php
+* -------------------------------------------------------------
+*
+*
+**/
+
 $config = array();
 $config["SITE_NAME"] = "Project Status";
 // 添加可编辑IP权限.

@@ -1,4 +1,43 @@
 <?PHP
+/**
+* Author: @-ChenBk <chenbingkun55@163.com> 2015-09-19 16:28
+* Version Info ------------------------------------------------
+e225fb6 * 发布版本 0.1
+:100644 100644 313dac9... 680f676... M	index.php
+78a822c * 时间过滤，Color过滤功能。
+:100644 100644 d402ef2... 313dac9... M	index.php
+12b7b65 [BUG] 在编辑模式下, 打开的row编辑时,切换到只读模式, 没有撤消编辑,导到只读模式下, 关不掉row编辑.
+:100644 100644 156995e... d402ef2... M	index.php
+14d3915 * filter 完成一半, stage date 这块搜索比较困难.
+:100644 100644 a90aa62... 156995e... M	index.php
+366c0ce * 修改Export Excel时不加载css样式.
+:100644 100644 cf9578b... a90aa62... M	index.php
+c184bcd * 修复搜索面板id和添加修改冲突BUG
+:100644 100644 f3a12de... cf9578b... M	index.php
+4b757e6 * 合并冲突问题处理。
+:100644 100644 799791d... f3a12de... M	index.php
+3c503c1 * 添加搜垵面板。
+:100644 100644 98c5c7e... d6168a3... M	index.php
+cebfe57 * 添加index.php导出Excel功能。
+:100644 100644 999741f... 98c5c7e... M	index.php
+b0e12bd * 添加index.php改出Excel。
+:100644 100644 999741f... 98c5c7e... M	index.php
+04cc415 * 使用Session保存编辑状态
+:100644 100644 eaa3965... 999741f... M	index.php
+22dcde2 * 添加己完成确认弹框。
+:100644 100644 7403026... eaa3965... M	index.php
+49c6355 + jquery.datepicker 日期选择器。 + get_names.php 取项目名称下拉列表。
+:100644 100644 10f3362... 7403026... M	index.php
+598952c * 基本功能完成.
+:100644 100644 27c7002... 10f3362... M	index.php
+f04540a * 加载 tablestore * 添加、删除、修改功能
+:100644 100644 c55ec86... 27c7002... M	index.php
+5d6ab00 * 初始化Dev
+:000000 100644 0000000... c55ec86... A	index.php
+* -------------------------------------------------------------
+*
+**/
+
 session_start();
 
     include "lib.php";
