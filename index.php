@@ -383,7 +383,7 @@ session_start();
     if(strcmp(@$_REQUEST['export'],"1") != 0):
 ?>
                 <tr>
-                    <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>">
+                    <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="background-color: khaki;">
                         <div class="function">
                             <div class="filter_plan">
                                 <div class="php">

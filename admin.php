@@ -94,7 +94,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
         echo "<form action=\"admin.php\" method=\"post\">";
     }
 ?>
-            <table style="background:red;">
+            <table style="background-Color:red;">
                 <tr>
                     <td class="name"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
                     <td class="theme_function"><INPUT id="theme_function" class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
