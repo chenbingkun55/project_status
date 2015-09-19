@@ -96,10 +96,15 @@ session_start();
        <script>
 
        $(document).ready(function(){
-           $.extend({notify:function(notify_text){
+           $.extend({notify:function(notify_text,long){
+		 var set_time = 3000;		 
+		 if(long) {
+		     set_time = 20000;
+		 }
+
                $("#main_notify").html(notify_text);
                $("#main_notify").stop().fadeIn();
-               $("#main_notify").fadeOut(2500);
+               $("#main_notify").fadeOut(set_time);
            }});
 
            $.extend({clean_filter_plan:function(notify_text){
@@ -171,7 +176,7 @@ session_start();
                } else {
                     $.get("common.php?opt=model_status&enable=1",function(data,status){
                        if(status == "success") {
-                           $.notify("进入编辑模式<BR>[添加]: 双击表格标头.<BR>[修改]: 双击要编辑的行.");
+                           $.notify("进入编辑模式<BR>[添加]: 双击表格标头.<BR>[修改]: 双击要编辑的行.",true);
                            model_edit = true;
                            $("#model_status").attr("enable","1");
                            $("#model_text").html("<button class=\"cupid-green\">编辑模式</button>");
