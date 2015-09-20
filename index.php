@@ -97,15 +97,37 @@ session_start();
 
        $(document).ready(function(){
            $.extend({notify:function(notify_text,long){
-		 var set_time = 3000;		 
-		 if(long) {
-		     set_time = 20000;
-		 }
+               var set_time = 3000;
+               if(long) {
+                   set_time = 20000;
+               }
 
                $("#main_notify").html(notify_text);
                $("#main_notify").stop().fadeIn();
                $("#main_notify").fadeOut(set_time);
-           }});
+            }});
+
+            $.extend({RGBToHex:function(rgb){
+               var regexp = /[0-9]{0,3}/g;
+               var re = rgb.match(regexp);//利用正则表达式去掉多余的部分，将rgb中的数字提取
+               var hexColor = "#"; var hex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+               for (var i = 0; i < re.length; i++) {
+                    var r = null, c = re[i], l = c;
+                    var hexAr = [];
+                    while (c > 16){
+                          r = c % 16;
+                          c = (c / 16) >> 0;
+                          hexAr.push(hex[r]);
+                     } hexAr.push(hex[c]);
+                     if(l < 16&&l != ""){
+                         hexAr.push(0)
+                     }
+                   hexColor += hexAr.reverse().join('');
+                }
+               //alert(hexColor)
+               return hexColor;
+            }});
+
 
            $.extend({clean_filter_plan:function(notify_text){
                 $("#name").attr("value","");
@@ -131,7 +153,7 @@ session_start();
                         $.notify("清空过滤面板条件完成");
                     }
                 });
-            
+
            }});
 
            $.extend({export:function(){
@@ -303,6 +325,37 @@ session_start();
                $('.show_opt').remove();
             });
 
+           $('table.tablesorter td').mouseover(function(){
+               var td_index = $(this).index();
+               $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
+                   var color = $.RGBToHex($(this).css("background-color"));
+                   if(color != "#FF0000" && color != "#008000" && color != "#FFFF00") {
+                       $(this).css("background-color","khaki");
+                   }
+               });
+
+               $(this).siblings().each(function(){
+                   var color = $.RGBToHex($(this).css("background-color"));
+                   if(color != "#FF0000" && color != "#008000" && color != "#FFFF00") {
+                       $(this).css("background-color","khaki");
+                   }
+               });
+           }).mouseout(function(){
+               var td_index = $(this).index();
+               $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
+                   var color = $.RGBToHex($(this).css("background-color"));
+                   if(color == "#F0E68C") {
+                       $(this).css("background-color","");
+                   }
+               });
+
+               $(this).siblings().each(function(){
+                   var color = $.RGBToHex( $(this).css("background-color"));
+                   if(color == "#F0E68C") {
+                       $(this).css("background-color","");
+                   }
+               });
+           });
 
            $('table.tablesorter td').dblclick(function(){
                if(! model_edit) return;
