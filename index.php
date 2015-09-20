@@ -41,10 +41,12 @@ f04540a * 加载 tablestore * 添加、删除、修改功能
 session_start();
 
     include "lib.php";
+
     $status = trim(@$_REQUEST["status"]);
     $filter_submit = (strcmp(@$_REQUEST["filter_submit"],"1") == 0) ? true : false;
     $filter = (strcmp(@$_REQUEST["filter"],"1") == 0 || $filter_submit) ? true : false;
     $find_global_filter = find_global_filter();
+    $export_bool = (strcmp(@$_REQUEST['export'],"1") == 0) ? true : false;
 
     if($filter) {
         $tbl_data = $mysql->filter();
@@ -73,7 +75,7 @@ session_start();
     }
 
     // 导出Html表格到 Excel
-    if(strcmp(@$_REQUEST['export'],"1") == 0) {
+    if($export_bool) {
         header("Content-type:application/vnd.ms-excel");
         header("Content-Disposition:attachment;filename=export_project_status.xls");
     }
@@ -86,7 +88,7 @@ session_start();
        <TITLE> <?PHP echo $config["SITE_NAME"] ?></TITLE>
        <!--<link type="text/css" rel="stylesheet" href="public/css/theme.default.css" />-->
 <?PHP
-    if(strcmp(@$_REQUEST['export'],"1") != 0):
+    if(! $export_bool):
 ?>
        <link type="text/css" rel="stylesheet" href="public/css/blue/style.css" />
        <link type="text/css" rel="stylesheet" href="public/css/common.css" />
@@ -494,7 +496,7 @@ session_start();
                 </th>
                 </tr>
 <?PHP
-    if(strcmp(@$_REQUEST['export'],"1") != 0):
+    if(! $export_bool):
 ?>
                 <tr>
                     <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="background-color: khaki;">
@@ -585,7 +587,7 @@ session_start();
                             printf($stage_tag,$stage_data[$stage]["PlanColor"],$stage_data[$stage]["PlanDate"]);
                             printf($stage_tag,$stage_data[$stage]["RealColor"],$stage_data[$stage]["RealDate"]);
                         }
-                        $note_td_full = str_replace("\n","<br>",$row["note"]);
+                        $note_td_full = $export_bool ? $row["note"] : str_replace("\n","<br>",$row["note"]);
                         $note_td = $row["note"];
                         echo "<td><div class=\"note_td_full\">".$note_td_full."</div><div class=\"note_td\">".$note_td."</div></td>";
                     echo "</tr>";
