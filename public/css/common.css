@@ -147,6 +147,7 @@ th {
     font-size: 12px;
     position: absolute;
     z-index: -1;
+    display: none;
 	background-color: #e6EEEE;
 }
 

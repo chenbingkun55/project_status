@@ -435,10 +435,12 @@ session_start();
         //$(".note_td").ellipsis({maxWidth:300,maxLine:2});
         // 备注显示在一行，鼠标Over 显示全部。
         $(".note_td").mouseover(function(){
+            $(this).prev().css("display","inline-block");
             $(this).prev().css("z-index","1");
         });
 
         $(".note_td_full").mouseout(function(){
+            $(".note_td_full").css("display","none");
             $(".note_td_full").css("z-index","-1");
         });
        });
