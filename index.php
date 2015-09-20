@@ -168,17 +168,25 @@ session_start();
 ?>
            }});
 
+           $.extend({add_filter:function(){
+               $("#add_filter").load('admin.php?add_filter=1');
+           }});
+
+
            $.extend({show_filter:function(){
                if(row_edit_bool) {
                    $.notify("<span style=\"color: red; font-size: 24px;\">表格编辑中,请先取消编辑.</span>");
                    return;
                }
 
-               $("#filter").load('admin.php?filter=1').slideToggle(500);
+               $("#filter").load('admin.php?filter=1').slideToggle(500,function(){
+                   $("#filter_add_img").toggle();
+               });
            }});
 
            $.extend({hide_filter:function(){
                $("#filter").empty().slideUp(1000);
+               $("#filter_add_img").hide();
            }});
 
 
@@ -444,6 +452,7 @@ session_start();
                             <div class="filter_plan">
                                 <div class="php">
                                     <span onClick="$.show_filter();"><img id="filter_img" src="public/img/filter_24x24.png" style="vertical-align: middle;"></span>&nbsp;
+                                    <!--<span onClick="$.add_filter();"><img id="filter_add_img" src="public/img/filter_add_24x24.png" style="vertical-align: middle;display: none;"></span>&nbsp;-->
                                     <a href="index.php?status=in_process"><button id="in_process" class="minimal">进行中</button></a>&nbsp;
                                     <a href="index.php?status=all"><button id="all" class="minimal">所有</button></a>
                                     <a href="index.php?status=finish"><button id="finish" class="minimal">己完成</button></a>&nbsp;

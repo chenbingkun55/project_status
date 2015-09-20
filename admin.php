@@ -68,15 +68,6 @@ session_start();
     }
 
 ?>
-<!DOCTYPE HTML>
-    <HEAD>
-       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-       <meta http-equiv="pragma" content="no-cache" />
-       <meta http-equiv="cache-control" content="no-cache" />
-       <TITLE> <?PHP echo @$config["SITE_NAME"] ?></TITLE>
-       <link type="text/css" rel="stylesheet" href="public/css/common.css" />
-    </HEAD>
-    <BODY>
 <?PHP
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'):
     if(strcmp(@$_REQUEST["filter"],"1") == 0){
@@ -187,7 +178,11 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="14" style="text-align:center"><INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />
+                    <td colspan="14" id="add_filter">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align:center;background-color: khaki;"><INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />
 <?PHP
 if($id):
 ?>
@@ -333,7 +328,6 @@ else:
 <?PHP
 endif;
 ?>
-    </BODY>
    <script>
        $(document).ready(function(){
         <?PHP
@@ -351,6 +345,5 @@ endif;
         ?>
        });
    </script>
-</HTML>
 <?PHP
 ?>
