@@ -20,6 +20,12 @@ session_start();
         case "clean_filter":
             $o->clean_filter();
             break;
+        case "save_filter":
+            $o->save_filter();
+            break;
+        case "unsave_filter":
+            $o->unsave_filter();
+            break;
         case "get_names":
             $o->get_names();
             break;
@@ -32,6 +38,23 @@ session_start();
 class option {
     public function clean_filter(){
         $_SESSION["filter_array"] = null;
+    }
+
+    public function save_filter()
+    {
+        $save_file = fopen("global_filter.set","w") or die("Unable to open file!");
+        if(is_array($_SESSION["filter_array"])){
+            $filter_json = json_encode($_SESSION["filter_array"]);
+            fwrite($save_file, $filter_json);
+        }
+        fclose($save_file);
+    }
+
+    public function unsave_filter()
+    {
+        $save_file = fopen("global_filter.set","w") or die("Unable to open file!");
+        fwrite($save_file, "");
+        fclose($save_file);
     }
 
     public function get_names(){

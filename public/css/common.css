@@ -63,6 +63,12 @@ table.tablesorter {
     float: right;
 }
 
+.save_filter {
+    font-size: 14px;
+    padding: 5px;
+    float: right;
+}
+
 .filter {
     display: none;
 }

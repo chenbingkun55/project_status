@@ -42,12 +42,18 @@ session_start();
 
     include "lib.php";
     $status = trim(@$_REQUEST["status"]);
-    $filter = (strcmp(@$_REQUEST["filter"],"1") == 0 || strcmp(@$_REQUEST["filter_submit"],"1") == 0) ? true : false;
+    $filter_submit = (strcmp(@$_REQUEST["filter_submit"],"1") == 0) ? true : false;
+    $filter = (strcmp(@$_REQUEST["filter"],"1") == 0 || $filter_submit) ? true : false;
 
     if($filter) {
         $tbl_data = $mysql->filter();
+    } else if(find_global_filter() && empty($status)){
+        if(load_filter()) {
+            $load_filter = true;
+            $tbl_data = $mysql->filter($load_filter);
+        }
     } else {
-	switch($status) {
+        switch($status) {
             case "all":
                 $tbl_data = $mysql->get_all();
                 break;
@@ -99,7 +105,7 @@ session_start();
            $.extend({notify:function(notify_text,long){
                var set_time = 3000;
                if(long) {
-                   set_time = 20000;
+                   set_time = 10000;
                }
 
                $("#main_notify").html(notify_text);
@@ -160,7 +166,7 @@ session_start();
 <?PHP
             if(trim(@$_REQUEST["status"])){
                echo "window.open(window.location.href + \"&export=1\");";
-            } else if($filter) {
+            } else if($filter || $load_filter) {
                echo "window.open(window.location.href + \"?export=1&filter=1\");";
             } else {
   		echo "window.open(window.location.href + \"?export=1\");";
@@ -178,10 +184,21 @@ session_start();
                    $.notify("<span style=\"color: red; font-size: 24px;\">表格编辑中,请先取消编辑.</span>");
                    return;
                }
-
+<?PHP
+if($filter_submit):
+?>
+               $("#filter").load('admin.php?filter=1&show_save_filter=1').slideToggle(500,function(){
+                   $("#filter_add_img").toggle();
+               });
+<?PHP
+else:
+?>
                $("#filter").load('admin.php?filter=1').slideToggle(500,function(){
                    $("#filter_add_img").toggle();
                });
+<?PHP
+endif;
+?>
            }});
 
            $.extend({hide_filter:function(){
@@ -189,6 +206,23 @@ session_start();
                $("#filter_add_img").hide();
            }});
 
+           $.extend({save_filter:function(){
+                $.get("common.php?opt=save_filter",function(data,status){
+                   if(status == "success") {
+                       $.notify("保存Filter 成功");
+                   }
+                });
+
+           }});
+
+           $.extend({unsave_filter:function(){
+                $.get("common.php?opt=unsave_filter",function(data,status){
+                   if(status == "success") {
+                       $.notify("取消Filter 成功");
+                   }
+                });
+
+           }});
 
            $.extend({model_switch:function(){
                // 默认打开只读模式
@@ -415,10 +449,13 @@ session_start();
                 echo "$(\"#in_process\").attr(\"class\",\"cupid-green\");";
         }
 
-        if($filter) {
+        if($filter || $load_filter) {
             echo "$(\"#filter_img\").attr(\"src\",\"public/img/filter_yes_24x24.png\");";
             echo "$(\"#in_process\").attr(\"class\",\"minimal\");";
             echo "$.show_filter();";
+            if($load_filter) {
+                echo "$.notify(\"当前使用的是默认过滤器。\",\"true\");";
+            }
         }
 
         if(@$_SESSION["model_edit"] == 1) {
@@ -470,6 +507,7 @@ session_start();
                                     <a href="index.php?status=all"><button id="all" class="minimal">所有</button></a>
                                     <a href="index.php?status=finish"><button id="finish" class="minimal">己完成</button></a>&nbsp;
                                     <a href="index.php?status=deleted"><button id="deleted" class="minimal">己删除</button></a>&nbsp;
+                                    <a href="index.php"><button id="refresh" class="cupid-green">刷新</button></a>&nbsp;
                                 </div>
                             </div>
                             <div class="export" onClick="$.export();">

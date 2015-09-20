@@ -168,7 +168,7 @@ class mysql_lib {
         return $this->query_one($sql);
     }
 
-    public function filter(){
+    public function filter($load_filter = false){
         global $config;
         $from_array = array();
         $get_db_array = array();
@@ -176,7 +176,7 @@ class mysql_lib {
         $return_array = array();
         $stage_json = new stage_date_json();
 
-        if(strcmp($_REQUEST["filter"],"1") == 0){
+        if(strcmp($_REQUEST["filter"],"1") == 0 || $load_filter){
             $name = $_SESSION["filter_array"]["name"];
             $theme_function = $_SESSION["filter_array"]["theme_function"];
             $version = $_SESSION["filter_array"]["version"];
@@ -419,6 +419,33 @@ class allow{
         }
         return false;
     }
+}
+
+function find_global_filter(){
+    $load_file = fopen("global_filter.set", "r") or die("Unable to open file!");
+    $filter_json =  fread($load_file,filesize("global_filter.set"));
+    $filter_array = json_decode($filter_json,true);
+
+    if(is_array($filter_array)){
+        return true;
+    }
+
+    fclose($load_file);
+    return false;
+}
+
+function load_filter(){
+    $load_file = fopen("global_filter.set", "r") or die("Unable to open file!");
+    $filter_json =  fread($load_file,filesize("global_filter.set"));
+    $filter_array = json_decode($filter_json,true);
+
+    if(is_array($filter_array)){
+        $_SESSION["filter_array"] = $filter_array;
+        return true;
+    }
+
+    fclose($load_file);
+    return false;
 }
 
 // 实例数据库

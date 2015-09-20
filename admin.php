@@ -39,6 +39,7 @@ session_start();
 
     include "lib.php";
 
+    $show_save_filter = trim(@$_REQUEST['show_save_filter']);
     $finish = trim(@$_REQUEST['finish']);
     $deleted = trim(@$_REQUEST['deleted']);
     $id = trim(@$_REQUEST['id']);
@@ -74,7 +75,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
         $update = @$_SESSION["filter_array"];
 
         echo "<form action=\"index.php\" method=\"post\">";
-	 echo "<input type=\"hidden\" name=\"filter_submit\" value=\"1\">";
+        echo "<input type=\"hidden\" name=\"filter_submit\" value=\"1\">";
         echo "<div class=\"filter_term\">";
         echo "<span><input id=\"include_deleted\" type=\"checkbox\" name=\"include_deleted\" style=\"vertical-align: middle\"".(empty($update["include_deleted"]) ? "" : "checked").">包括己删除</span>";
         echo "&nbsp;&nbsp;";
@@ -216,8 +217,10 @@ else:
                         <INPUT type="SUBMIT" value="搜索" />
                         <INPUT type="RESET" value="清空" onClick="$.clean_filter_plan();"/>
                         <INPUT type="BUTTON" value="收起过滤面板" onClick="$.hide_filter();" />
+                        <INPUT type="BUTTON" value="清空默认Filter过滤" onClick="$.unsave_filter();" />
 
 <?PHP
+                        echo ($show_save_filter) ? "<INPUT type=\"BUTTON\" value=\"将当前Filter设置为默认\" onClick=\"$.save_filter();\" />" : "";
     else:
 ?>
                         <INPUT type="SUBMIT" value="添加" />
