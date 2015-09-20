@@ -221,8 +221,10 @@ else:
                         <INPUT type="BUTTON" value="收起过滤面板" onClick="$.hide_filter();" />
 
 <?PHP
+            if($_SESSION["admin"] == true && $allow->pass()):
                         echo ($show_save_filter) ? "<INPUT type=\"BUTTON\" value=\"将当前Filter设置为默认\" onClick=\"$.save_filter();\" />" : "";
                         echo ($find_global_filter) ? "<INPUT type=\"BUTTON\" value=\"清空默认Filter过滤\" onClick=\"$.unsave_filter();\" />" : "";
+            endif;
 
     else:
 ?>

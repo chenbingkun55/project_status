@@ -455,5 +455,7 @@ $mysql->conn_db();
 $stage_json = new stage_date_json();
 // 实例ALLOW编辑权限
 $allow = new allow();
+// 管理员模式
+$_SESSION["admin"] = $allow->pass();
 ?>
 

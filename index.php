@@ -526,7 +526,7 @@ session_start();
 ?>
                         </div>
 <?PHP
-        if($allow->pass()):
+        if($_SESSION["admin"] == true && $allow->pass()):
 ?>
                         <div class="admin">
                             <div class="model_status" id="model_status" enable="0">
