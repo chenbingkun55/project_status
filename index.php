@@ -44,10 +44,11 @@ session_start();
     $status = trim(@$_REQUEST["status"]);
     $filter_submit = (strcmp(@$_REQUEST["filter_submit"],"1") == 0) ? true : false;
     $filter = (strcmp(@$_REQUEST["filter"],"1") == 0 || $filter_submit) ? true : false;
+    $find_global_filter = find_global_filter();
 
     if($filter) {
         $tbl_data = $mysql->filter();
-    } else if(find_global_filter() && empty($status)){
+    } else if($find_global_filter && empty($status)){
         if(load_filter()) {
             $load_filter = true;
             $tbl_data = $mysql->filter($load_filter);
@@ -185,20 +186,19 @@ session_start();
                    return;
                }
 <?PHP
-if($filter_submit):
+    $get_filter_plan = "";
+    if($filter_submit){
+        $get_filter_plan .= "&show_save_filter=1";
+    }
+
+    if($find_global_filter){
+        $get_filter_plan .= "&find_global_filter=1";
+    }
+
+    echo "$(\"#filter\").load(\"admin.php?filter=1".$get_filter_plan."\").slideToggle(500,function(){";
 ?>
-               $("#filter").load('admin.php?filter=1&show_save_filter=1').slideToggle(500,function(){
                    $("#filter_add_img").toggle();
                });
-<?PHP
-else:
-?>
-               $("#filter").load('admin.php?filter=1').slideToggle(500,function(){
-                   $("#filter_add_img").toggle();
-               });
-<?PHP
-endif;
-?>
            }});
 
            $.extend({hide_filter:function(){

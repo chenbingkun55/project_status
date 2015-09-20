@@ -39,7 +39,9 @@ session_start();
 
     include "lib.php";
 
-    $show_save_filter = trim(@$_REQUEST['show_save_filter']);
+    $show_save_filter = (strcmp(trim(@$_REQUEST['show_save_filter']),"1") == 0) ? true : false;
+    $find_global_filter = (strcmp(trim(@$_REQUEST['find_global_filter']),"1") == 0) ? true : false;
+
     $finish = trim(@$_REQUEST['finish']);
     $deleted = trim(@$_REQUEST['deleted']);
     $id = trim(@$_REQUEST['id']);
@@ -217,10 +219,11 @@ else:
                         <INPUT type="SUBMIT" value="搜索" />
                         <INPUT type="RESET" value="清空" onClick="$.clean_filter_plan();"/>
                         <INPUT type="BUTTON" value="收起过滤面板" onClick="$.hide_filter();" />
-                        <INPUT type="BUTTON" value="清空默认Filter过滤" onClick="$.unsave_filter();" />
 
 <?PHP
                         echo ($show_save_filter) ? "<INPUT type=\"BUTTON\" value=\"将当前Filter设置为默认\" onClick=\"$.save_filter();\" />" : "";
+                        echo ($find_global_filter) ? "<INPUT type=\"BUTTON\" value=\"清空默认Filter过滤\" onClick=\"$.unsave_filter();\" />" : "";
+
     else:
 ?>
                         <INPUT type="SUBMIT" value="添加" />
