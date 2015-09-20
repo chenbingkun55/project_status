@@ -394,6 +394,7 @@ session_start();
                    row_edit_bool = true;
                    $.hide_filter();
                }
+
                $('.show_opt').remove();
            });
 <?PHP
@@ -430,6 +431,16 @@ session_start();
             echo "$(\"#model_text\").html(\"<button class='minimal'>只读模式</button>\");";
         }
 ?>
+
+        //$(".note_td").ellipsis({maxWidth:300,maxLine:2});
+        // 备注显示在一行，鼠标Over 显示全部。
+        $(".note_td").mouseover(function(){
+            $(this).prev().css("z-index","1");
+        });
+
+        $(".note_td_full").mouseout(function(){
+            $(".note_td_full").css("z-index","-1");
+        });
        });
        </script>
     </HEAD>
@@ -534,7 +545,9 @@ session_start();
                             printf($stage_tag,$stage_data[$stage]["PlanColor"],$stage_data[$stage]["PlanDate"]);
                             printf($stage_tag,$stage_data[$stage]["RealColor"],$stage_data[$stage]["RealDate"]);
                         }
-                        echo "<td>".$row["note"]."</td>";
+                        $note_td_full = str_replace("\n","<br>",$row["note"]);
+                        $note_td = $row["note"];
+                        echo "<td><div class=\"note_td_full\">".$note_td_full."</div><div class=\"note_td\">".$note_td."</div></td>";
                     echo "</tr>";
                     }
                 ?>

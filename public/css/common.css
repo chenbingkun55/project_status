@@ -130,6 +130,26 @@ th {
 .note {
 	width: 20% !important;
 }
+
+.note_td {
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+	width: 240px;
+    white-space:nowrap;
+}
+
+.note_td_full {
+    padding: 20px;
+	width: auto;
+    height: auto;
+    font-size: 12px;
+    position: absolute;
+    z-index: -1;
+	background-color: #e6EEEE;
+}
+
 button::-moz-focus-inner {
   border: 0; }
 /* minimal
