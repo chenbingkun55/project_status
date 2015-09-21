@@ -38,7 +38,7 @@ f04540a * 加载 tablestore * 添加、删除、修改功能
 $config = array();
 $config["SITE_NAME"] = "Project Status";
 // 添加可编辑IP权限.
-$config["ALLOW_IP"] = array("192.168.23.100","192.168.23.96","192.168.23.83","192.168.1.105","127.0.0.1");
+$config["ALLOW_IP"] = array("192.168.23.135","192.168.234.200","192.168.234.144","192.168.23.100","192.168.23.96","192.168.23.83","192.168.1.105","127.0.0.1");
 // DB 配置
 $config["DB_HOST"] = "localhost";
 $config["DB_USER"] = "root";
@@ -176,7 +176,7 @@ class mysql_lib {
         $return_array = array();
         $stage_json = new stage_date_json();
 
-        if(strcmp($_REQUEST["filter"],"1") == 0 || $load_filter){
+        if(strcmp(@$_REQUEST["filter"],"1") == 0 || $load_filter){
             $name = $_SESSION["filter_array"]["name"];
             $theme_function = $_SESSION["filter_array"]["theme_function"];
             $version = $_SESSION["filter_array"]["version"];
@@ -423,7 +423,7 @@ class allow{
 
 function find_global_filter(){
     $load_file = fopen("global_filter.set", "r") or die("Unable to open file!");
-    $filter_json =  fread($load_file,filesize("global_filter.set"));
+    $filter_json =  @fread($load_file,filesize("global_filter.set"));
     $filter_array = json_decode($filter_json,true);
 
     if(is_array($filter_array)){

@@ -47,6 +47,7 @@ session_start();
     $filter = (strcmp(@$_REQUEST["filter"],"1") == 0 || $filter_submit) ? true : false;
     $find_global_filter = find_global_filter();
     $export_bool = (strcmp(@$_REQUEST['export'],"1") == 0) ? true : false;
+    $load_filter = false;
 
     if($filter) {
         $tbl_data = $mysql->filter();
@@ -243,7 +244,7 @@ session_start();
                } else {
                     $.get("common.php?opt=model_status&enable=1",function(data,status){
                        if(status == "success") {
-                           $.notify("进入编辑模式<BR>[添加]: 双击表格标头.<BR>[修改]: 双击要编辑的行.",true);
+                           $.notify("进入编辑模式<BR>[添加\\修改]: 双击表格标题或行<BR>[触屏]: Touch表格标题或行下拉.",true);
                            model_edit = true;
                            $("#model_status").attr("enable","1");
                            $("#model_text").html("<button class=\"cupid-green\">编辑模式</button>");
@@ -468,7 +469,7 @@ endif;
             }
         }
 
-        if($_SESSION["model_edit"] === true) {
+        if(@$_SESSION["model_edit"] == true) {
             echo "var model_edit = true;";
             echo "$(\"#model_status\").attr(\"enable\",\"1\");";
             echo "$(\"#model_text\").html(\"<button class='cupid-green'>编辑模式</button>\");";
