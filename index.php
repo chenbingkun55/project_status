@@ -634,7 +634,7 @@ endif;
                             printf($stage_tag,$stage_data[$stage]["PlanColor"],$stage_data[$stage]["PlanDate"]);
                             printf($stage_tag,$stage_data[$stage]["RealColor"],$stage_data[$stage]["RealDate"]);
                         }
-                        $note_td_full = $export_bool ? $row["note"] : str_replace("\n","<br>",$row["note"]);
+                        $note_td_full = $export_bool ? "" : str_replace("\n","<br>",$row["note"]);
                         $note_td = $row["note"];
                         echo "<td><div class=\"note_td_full\">".$note_td_full."</div><div class=\"note_td\">".$note_td."</div></td>";
                     echo "</tr>";
