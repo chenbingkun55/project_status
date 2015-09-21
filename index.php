@@ -102,6 +102,7 @@ session_start();
        <script type="text/javascript" src="public/js/jquery.tablesorter.widgets.min.js"></script>
        <script type="text/javascript" src="public/js/jquery.metadata.js"></script>
        <script type="text/javascript" src="public/js/jquery.datepicker.min.js"></script>
+       <!--<script type="text/javascript" src="public/js/jquery.mobile-1.4.5.min.js"></script>-->
        <script>
 
        $(document).ready(function(){
@@ -332,6 +333,7 @@ session_start();
 
            var row_edit_bool = false;
            var model_status = false;
+           var touch_on = true;
            //第一列不进行排序(索引从0开始)
            $.tablesorter.defaults.headers = {
                0: {sorter: false},
@@ -347,9 +349,43 @@ session_start();
                 sortReset      : true,
                 sortRestart    : true
            });
+<?PHP
+        if($_SESSION["admin"] == true && $allow->pass()):
+?>
 
-            $("table.tablesorter th").dblclick(function(){
+            $("table.tablesorter").on("touchstart", function(e) {
+                startX = e.originalEvent.changedTouches[0].pageX,
+                startY = e.originalEvent.changedTouches[0].pageY;
+                touch_on = true;
+            });
+
+            $("table.tablesorter").on("touchmove", function(e) {
+                //e.preventDefault();
+                moveEndX = e.originalEvent.changedTouches[0].pageX,
+                moveEndY = e.originalEvent.changedTouches[0].pageY,
+                X = moveEndX - startX,
+                Y = moveEndY - startY;
+
+                if ( Math.abs(X) > Math.abs(Y) && X > 0 ) {
+                    touch_on = true; // 向右
+                }
+                else if ( Math.abs(X) > Math.abs(Y) && X < 0 ) {
+                    touch_on = true; // 向左
+                }
+                else if ( Math.abs(Y) > Math.abs(X) && Y > 0) {
+                    touch_on = false; // 向下
+                }
+                else if ( Math.abs(Y) > Math.abs(X) && Y < 0 ) {
+                    touch_on = true; // 向上
+                }
+                else{
+                    touch_on = true;
+                }
+            });
+
+            $("table.tablesorter th").bind("touchend dblclick",function(){
                if(! model_edit) return;
+               if(touch_bool && touch_on) return;
 
                if(row_edit_bool){
                    row_edit_bool = false;
@@ -368,6 +404,80 @@ session_start();
                }
                $('.show_opt').remove();
             });
+           $('table.tablesorter td').bind("touchend dblclick",function(){
+               if(! model_edit) return;
+               if(touch_bool && touch_on) return;
+
+               var edit_row = $(this).parent();
+               var show_opt = "<tr class=\"show_opt\"><td style=\"text-align:center\" colspan=\"14\">[<a href=\"admin.php?id="+edit_row.attr("id")+"\">修改</a>] [删除] [己完成]<td></tr>";
+
+               if(row_edit_bool){
+                   $('.show_opt').parent().find("td").each(function(){
+                       $(this).show();
+                   });
+
+                   row_edit_bool = false;
+               } else {
+                   first_td = edit_row.find("td").first();
+                   $.notify('编辑 Row: ['+edit_row.attr("id")+'] <BR>项目: ' + first_td.text()+"<BR>主题/功能: "+ first_td.next().text());
+                   edit_row.find("td").each(function(){
+                       $(this).hide();
+                   });
+
+                   $.get("admin.php?id="+edit_row.attr("id"),function(data,status){
+                       if(status != "success") {
+                           $.notify('更新失败');
+                       } else {
+                           edit_row.append("<td class=\"show_opt\" colspan=\"14\">"+data+"</td>");
+                       }
+                   });
+                   row_edit_bool = true;
+                   $.hide_filter();
+               }
+
+               $('.show_opt').remove();
+           });
+<?PHP
+endif;
+?>
+
+<?PHP
+        switch($status) {
+            case "all":
+                echo "$(\"#all\").attr(\"class\",\"cupid-green\");";
+                break;
+            case "deleted":
+                echo "$(\"#deleted\").attr(\"class\",\"cupid-green\");";
+                break;
+            case "finish":
+                echo "$(\"#finish\").attr(\"class\",\"cupid-green\");";
+                break;
+            case "in_process":
+                echo "$(\"#in_process\").attr(\"class\",\"cupid-green\");";
+                break;
+            default :
+                echo "$(\"#in_process\").attr(\"class\",\"cupid-green\");";
+        }
+
+        if($filter || $load_filter) {
+            echo "$(\"#filter_img\").attr(\"src\",\"public/img/filter_yes_24x24.png\");";
+            echo "$(\"#in_process\").attr(\"class\",\"minimal\");";
+            echo "$.show_filter();";
+            if($load_filter) {
+                echo "$.notify(\"当前使用的是默认过滤器。\",\"true\");";
+            }
+        }
+
+        if($_SESSION["model_edit"] === true) {
+            echo "var model_edit = true;";
+            echo "$(\"#model_status\").attr(\"enable\",\"1\");";
+            echo "$(\"#model_text\").html(\"<button class='cupid-green'>编辑模式</button>\");";
+        } else {
+            echo "var model_edit = false;";
+            echo "$(\"#model_status\").attr(\"enable\",\"0\");";
+            echo "$(\"#model_text\").html(\"<button class='minimal'>只读模式</button>\");";
+        }
+?>
 
            $('table.tablesorter td').mouseover(function(){
                var td_index = $(this).index();
@@ -401,75 +511,12 @@ session_start();
                });
            });
 
-           $('table.tablesorter td').dblclick(function(){
-               if(! model_edit) return;
-
-               var edit_row = $(this).parent();
-               var show_opt = "<tr class=\"show_opt\"><td style=\"text-align:center\" colspan=\"14\">[<a href=\"admin.php?id="+edit_row.attr("id")+"\">修改</a>] [删除] [己完成]<td></tr>";
-
-               if(row_edit_bool){
-                   $('.show_opt').parent().find("td").each(function(){
-                       $(this).show();
-                   });
-
-                   row_edit_bool = false;
-               } else {
-                   first_td = edit_row.find("td").first();
-                   $.notify('编辑 Row: ['+edit_row.attr("id")+'] <BR>项目: ' + first_td.text()+"<BR>主题/功能: "+ first_td.next().text());
-                   edit_row.find("td").each(function(){
-                       $(this).hide();
-                   });
-
-                   $.get("admin.php?id="+edit_row.attr("id"),function(data,status){
-                       if(status != "success") {
-                           $.notify('更新失败');
-                       } else {
-                           edit_row.append("<td class=\"show_opt\" colspan=\"14\">"+data+"</td>");
-                       }
-                   });
-                   row_edit_bool = true;
-                   $.hide_filter();
-               }
-
-               $('.show_opt').remove();
-           });
-<?PHP
-        switch($status) {
-            case "all":
-                echo "$(\"#all\").attr(\"class\",\"cupid-green\");";
-                break;
-            case "deleted":
-                echo "$(\"#deleted\").attr(\"class\",\"cupid-green\");";
-                break;
-            case "finish":
-                echo "$(\"#finish\").attr(\"class\",\"cupid-green\");";
-                break;
-            case "in_process":
-                echo "$(\"#in_process\").attr(\"class\",\"cupid-green\");";
-                break;
-            default :
-                echo "$(\"#in_process\").attr(\"class\",\"cupid-green\");";
+        // 判断是否支持 Touch 屏。
+        function is_touch_device() {
+             return !!('ontouchstart' in window);
         }
 
-        if($filter || $load_filter) {
-            echo "$(\"#filter_img\").attr(\"src\",\"public/img/filter_yes_24x24.png\");";
-            echo "$(\"#in_process\").attr(\"class\",\"minimal\");";
-            echo "$.show_filter();";
-            if($load_filter) {
-                echo "$.notify(\"当前使用的是默认过滤器。\",\"true\");";
-            }
-        }
-
-        if(@$_SESSION["model_edit"] == 1) {
-            echo "model_edit = true;";
-            echo "$(\"#model_status\").attr(\"enable\",\"1\");";
-            echo "$(\"#model_text\").html(\"<button class='cupid-green'>编辑模式</button>\");";
-        } else {
-            echo "model_edit = false;";
-            echo "$(\"#model_status\").attr(\"enable\",\"0\");";
-            echo "$(\"#model_text\").html(\"<button class='minimal'>只读模式</button>\");";
-        }
-?>
+        var touch_bool = is_touch_device();
 
         //$(".note_td").ellipsis({maxWidth:300,maxLine:2});
         // 备注显示在一行，鼠标Over 显示全部。

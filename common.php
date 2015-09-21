@@ -66,7 +66,7 @@ class option {
     public function model_status()
     {
         global $enable;
-        $_SESSION["model_edit"] = $enable;
+        $_SESSION["model_edit"] = (strcmp($enable,"1") == 0) ? true : false;
     }
 }
 ?>
