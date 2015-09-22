@@ -1,11 +1,18 @@
+html {
+    overflow: auto;
+}
+
 body {
     margin: 0px;
-    padding: 0px;
+    padding: 5px;
+    width: 100%
+    overflow-x: hidden;
 	background-color: #e6EEEE;
 }
 
 table.tablesorter {
     margin: 0px 0 0px;
+    width: 100%;
 }
 
 .main_notify {
@@ -106,57 +113,63 @@ th {
 	text-align: center;
 }
 
+
 .name {
-	width: 6% !important;
-}
-
-.theme_function {
-	width: 10% !important;
-}
-
-.version {
-	width: 4% !important;
-}
-
-.status {
-	width: 5% !important;
-}
-
-.stage {
-	width: 6% !important;
-}
-
-.stage_title {
-	width: 12% !important;
-}
-
-.stage_date {
-	width: 6% !important;
-}
-
-.note {
-	width: 20% !important;
-}
-
-.note_td {
-    margin: 0px;
-    padding: 0px;
+	width: 60px;
     overflow: hidden;
     text-overflow: ellipsis;
-	width: 240px;
     white-space:nowrap;
 }
 
-.note_td_full {
-    padding: 20px;
-	width: auto;
-    height: auto;
-    font-size: 12px;
-    position: absolute;
-    z-index: -1;
-    display: none;
-	background-color: #e6EEEE;
+.theme_function {
+	width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
 }
+
+.version {
+	width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+}
+
+.status {
+	width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+}
+
+.stage {
+	width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+}
+
+.stage_title {
+}
+
+.stage_date {
+	width: 75px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+}
+
+.stage_color {
+}
+
+
+.note {
+	width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+}
+
 
 button::-moz-focus-inner {
   border: 0; }

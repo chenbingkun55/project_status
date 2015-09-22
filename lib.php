@@ -38,9 +38,10 @@ f04540a * 加载 tablestore * 添加、删除、修改功能
 $config = array();
 $config["SITE_NAME"] = "Project Status";
 $config["WHITE_IP"] = array("127.0.0.1"); // 添加IP访问白名单.
-$config["WHITE_NET"] = array("192.168.23"); // 可以添加其它网段进来,只需要用到前面3个段位.
+$config["WHITE_NET"] = array("192.168.23","192.168.1"); // 可以添加其它网段进来,只需要用到前面3个段位.
 $config["ADMIN_IP"] = array(
     "192.168.23.100",
+    "192.168.1.109",
     "192.168.23.96",
     "192.168.23.83",
     "192.168.23.112",

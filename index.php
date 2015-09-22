@@ -108,7 +108,6 @@ session_start();
        <script type="text/javascript" src="public/js/jquery.tablesorter.widgets.min.js"></script>
        <script type="text/javascript" src="public/js/jquery.metadata.js"></script>
        <script type="text/javascript" src="public/js/jquery.datepicker.min.js"></script>
-       <!--<script type="text/javascript" src="public/js/jquery.mobile-1.4.5.min.js"></script>-->
        <script>
 
        $(document).ready(function(){
@@ -353,7 +352,8 @@ session_start();
                 widgets        : ['zebra', 'columns'],
                 usNumberFormat : false,
                 sortReset      : true,
-                sortRestart    : true
+                sortRestart    : true,
+                headerClass: 'header',
            });
 <?PHP
         if($_SESSION["admin"] == true && $allow->pass()):
@@ -524,16 +524,12 @@ endif;
 
         var touch_bool = is_touch_device();
 
-        //$(".note_td").ellipsis({maxWidth:300,maxLine:2});
+        //$(".note").ellipsis({maxWidth:300,maxLine:2});
         // 备注显示在一行，鼠标Over 显示全部。
-        $(".note_td").mouseover(function(){
-            $(this).prev().css("display","inline-block");
-            $(this).prev().css("z-index","1");
-        });
-
-        $(".note_td_full").mouseout(function(){
-            $(".note_td_full").css("display","none");
-            $(".note_td_full").css("z-index","-1");
+        $("table.tablesorter td div").mouseover(function(){
+            $(this).css("overflow","auto");
+        }).mouseout(function(){
+            $(this).css("overflow","hidden");
         });
        });
        </script>
@@ -606,7 +602,7 @@ endif;
                             echo "<th class=\"stage_title\" colspan=\"2\">".$stage."</th>";
                         }
                     ?>
-                    <th class="header note" rowspan="2">备注</th>
+                    <th class="header" rowspan="2">备注</th>
                 </tr>
                 <tr>
                 <?PHP
@@ -621,28 +617,26 @@ endif;
                 <?PHP
                     foreach($tbl_data as $row){
                         if(strcmp($row["deleted"],0) != 0) {
-                            $tag = "<td><s><del>%s</del></s></td>";
+                            $tag = "<td><div class=\"%s\"><s><del>%s</del></s><div></td>";
                         } else if(strcmp($row["finish"],0) != 0) {
-                            $tag = "<td><i><u>%s</u></i></td>";
+                            $tag = "<td><div class=\"%s\"><i><u>%s</u></i><div></td>";
                         }else {
-                            $tag = "<td>%s</td>";
+                            $tag = "<td><div class=\"%s\">%s<div></td>";
                         }
                         echo "<tr id=\"".$row["id"]."\">";
-                        printf($tag,$row["name"]);
-                        printf($tag,$row["theme_function"]);
-                        printf($tag,$row["version"]);
-                        printf($tag,$row["status"]);
-                        printf($tag,$row["stage"]);
+                        printf($tag,"name",$row["name"]);
+                        printf($tag,"theme_function",$row["theme_function"]);
+                        printf($tag,"version",$row["version"]);
+                        printf($tag,"status",$row["status"]);
+                        printf($tag,"stage",$row["stage"]);
 
                         $stage_data = $stage_json->decode($row['stage_date_json']);
-                        $stage_tag = "<td style=\"background:%s\">%s</td>";
+                        $stage_tag = "<td style=\"background:%s\"><div class=\"stage_date\">%s</div></td>";
                         foreach($config["STAGE"] as $stage){
                             printf($stage_tag,$stage_data[$stage]["PlanColor"],$stage_data[$stage]["PlanDate"]);
                             printf($stage_tag,$stage_data[$stage]["RealColor"],$stage_data[$stage]["RealDate"]);
                         }
-                        $note_td_full = $export_bool ? "" : str_replace("\n","<br>",$row["note"]);
-                        $note_td = $row["note"];
-                        echo "<td><div class=\"note_td_full\">".$note_td_full."</div><div class=\"note_td\">".$note_td."</div></td>";
+                        printf($tag,"note",$row["note"]);
                     echo "</tr>";
                     }
                 ?>

@@ -41,6 +41,7 @@ session_start();
 
     $show_save_filter = (strcmp(trim(@$_REQUEST['show_save_filter']),"1") == 0) ? true : false;
     $find_global_filter = (strcmp(trim(@$_REQUEST['find_global_filter']),"1") == 0) ? true : false;
+    $filter = (strcmp(@$_REQUEST["filter"],"1") == 0) ? true : false;
 
     $finish = trim(@$_REQUEST['finish']);
     $deleted = trim(@$_REQUEST['deleted']);
@@ -73,7 +74,7 @@ session_start();
 ?>
 <?PHP
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'):
-    if(strcmp(@$_REQUEST["filter"],"1") == 0){
+    if($filter){
         $update = @$_SESSION["filter_array"];
 
         echo "<form action=\"index.php\" method=\"post\">";
@@ -91,13 +92,13 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 ?>
             <table style="background-Color:red;">
                 <tr>
-                    <td class="name"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
+                    <td class="name"><INPUT id="name" class="input_ajax name" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
                     <td class="theme_function"><INPUT id="theme_function" class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
-                    <td class="version"><INPUT id="version" class="input_ajax" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
+                    <td class="version"><INPUT id="version" class="input_ajax version" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
                     <td class="status">
-                        <select id="status" class="select_ajax" name="status" style=\"width:100%\">
+                        <select id="status" class="select_ajax status" name="status" style=\"width:100%\">
                         <?PHP
-                            if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                            if($filter) {
                                 echo "<option value=\"\">空</option>";
                             }
                             $status_array = array("提前","正常","延迟");
@@ -105,7 +106,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                                 if(strcmp($status,@$update["status"]) == 0){
                                     echo "<option value=\"".$status."\" selected=\"selected\">".$status."</option>";
                                 } else {
-                                    if(strcmp($status,"正常") == 0 && strcmp(@$_REQUEST["filter"],"1") != 0){
+                                    if(strcmp($status,"正常") == 0 && $filter){
                                         echo "<option value=\"".$status."\" selected=\"selected\">".$status."</option>";
                                     } else {
                                         echo "<option value=\"".$status."\">".$status."</option>";
@@ -116,9 +117,9 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         </select>
                     </td>
                     <td class="stage">
-                        <select id="stage" class="select_ajax" name="stage">
+                        <select id="stage" class="select_ajax stage" name="stage">
                         <?PHP
-                            if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                            if($filter) {
                                 echo "<option value=\"\">空</option>";
                             }
                             foreach($config["STAGE"] as $stage){
@@ -132,7 +133,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         </select>
                     </td>
 <?PHP
-                        if(strcmp(@$_REQUEST["filter"],"1") == 0){
+                        if($filter){
                             if(empty($update['stage_date_json'])) {
                                 $stage_array = $stage_json->stage_date_init(true);
                             } else {
@@ -150,7 +151,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         foreach($stage_array as $stage => $date){
                             echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
                             echo "<input id=\"plandate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
-                            if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                            if($filter) {
                                 echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".@$date["PlanEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
@@ -163,7 +164,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "</td>";
                             echo "<td class=\"stage_date\" style=\"background:".$date["RealColor"]."\">";
                             echo "<input id=\"realdate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
-                            if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                            if($filter) {
                                 echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".@$date["RealEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
@@ -177,7 +178,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         }
 ?>
                     <td class="note">
-                        <textarea id="note" class="textarea_ajax" rows="5" name="note"><?PHP echo @$update["note"]?></textarea>
+                        <textarea id="note" class="textarea_ajax note" name="note"><?PHP echo @$update["note"]?></textarea>
                     </td>
                 </tr>
                 <tr>
@@ -214,7 +215,7 @@ if($id):
 
 else:
 
-    if(strcmp(@$_REQUEST["filter"],"1") == 0):
+    if($filter):
 ?>
                         <INPUT type="SUBMIT" value="搜索" />
                         <INPUT type="RESET" value="清空" onClick="$.clean_filter_plan();"/>
@@ -323,7 +324,7 @@ else:
 ?>
                 <tr>
                     <td>备注:</td>
-                    <td><textarea name="note" rows="5" /><?PHP echo @$update["note"]?></textarea></td>
+                    <td><textarea name="note"><?PHP echo @$update["note"]?></textarea></td>
                 </tr>
                 <tr>
                     <INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />
@@ -340,7 +341,7 @@ endif;
        $(document).ready(function(){
         <?PHP
             foreach($config["STAGE"] as $stage){
-                if(strcmp(@$_REQUEST["filter"],"1") == 0) {
+                if($filter) {
                    echo "$('#plandate_".$stage."').datePicker();\n";
                    echo "$('#realdate_".$stage."').datePicker();\n";
                    echo "$('#planenddate_".$stage."').datePicker();\n";
