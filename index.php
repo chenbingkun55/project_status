@@ -39,8 +39,13 @@ f04540a * 加载 tablestore * 添加、删除、修改功能
 **/
 
 session_start();
-
     include "lib.php";
+
+    // 允许IP访问.
+    if(! $allow->is_allow_ip()) die("<H1 style=\"color:red;\">This ip [".$_SERVER["REMOTE_ADDR"]."] access deny!</H1>请联系管理员: bingkunchen");
+
+    // 管理员模式
+    $_SESSION["admin"] = $allow->pass();
 
     $status = trim(@$_REQUEST["status"]);
     $filter_submit = (strcmp(@$_REQUEST["filter_submit"],"1") == 0) ? true : false;

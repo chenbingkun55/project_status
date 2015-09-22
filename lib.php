@@ -37,8 +37,15 @@ f04540a * 加载 tablestore * 添加、删除、修改功能
 
 $config = array();
 $config["SITE_NAME"] = "Project Status";
-// 添加可编辑IP权限.
-$config["ALLOW_IP"] = array("192.168.23.135","192.168.234.200","192.168.234.144","192.168.23.100","192.168.23.96","192.168.23.83","192.168.1.105","127.0.0.1");
+$config["WHITE_IP"] = array("127.0.0.1"); // 添加IP访问白名单.
+$config["WHITE_NET"] = array("192.168.23"); // 可以添加其它网段进来,只需要用到前面3个段位.
+$config["ADMIN_IP"] = array(
+    "192.168.23.100",
+    "192.168.23.96",
+    "192.168.23.83",
+    "192.168.23.112",
+    "127.0.0.1"); // 添加可编辑Admin IP权限.
+
 // DB 配置
 $config["DB_HOST"] = "localhost";
 $config["DB_USER"] = "root";
@@ -410,11 +417,27 @@ class stage_date_json{
     }
 }
 
-class allow{
+class allow {
+    public function is_allow_ip(){
+        global $config;
+        $ip = $_SERVER["REMOTE_ADDR"];
+        $ip_net = str_replace(strrchr($ip,"."),"",$ip);
+
+        foreach($config["WHITE_IP"] as $allow_ip){
+            if(strcmp($allow_ip,$ip) == 0) return true;
+        }
+
+        foreach($config["WHITE_NET"] as $allow_net){
+            if(strcmp($allow_net,$ip_net) == 0) return true;
+        }
+
+        return false;
+    }
+
     public function pass(){
         global $config;
 
-        foreach($config["ALLOW_IP"] as $ip){
+        foreach($config["ADMIN_IP"] as $ip){
             if(strcmp($ip,@$_SERVER["REMOTE_ADDR"]) == 0) return true;
         }
         return false;
@@ -455,7 +478,5 @@ $mysql->conn_db();
 $stage_json = new stage_date_json();
 // 实例ALLOW编辑权限
 $allow = new allow();
-// 管理员模式
-$_SESSION["admin"] = $allow->pass();
 ?>
 
