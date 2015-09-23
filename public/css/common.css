@@ -49,6 +49,7 @@ table.tablesorter {
 .filter_term {
     width: 100%;
     padding: 2px;
+    text-align: center;
     font: bold 12px/1 "helvetica neue", helvetica, arial, sans-serif;
 }
 

@@ -206,13 +206,14 @@ session_start();
     echo "$(\"#filter\").load(\"admin.php?filter=1".$get_filter_plan."\").slideToggle(500,function(){";
 ?>
                    $("#filter_add_img").toggle();
-                   row_edit_bool = true;
+                   show_filter_bool = true;
                });
            }});
 
            $.extend({hide_filter:function(){
                $("#filter").empty().slideUp(1000);
                $("#filter_add_img").hide();
+               show_filter_bool = false;
            }});
 
            $.extend({save_filter:function(){
@@ -338,6 +339,7 @@ session_start();
            }});
 
            var row_edit_bool = false;
+           var show_filter_bool = false;
            var model_status = false;
            var touch_on = true;
            //第一列不进行排序(索引从0开始)
@@ -487,7 +489,7 @@ endif;
 ?>
 
            $('table.tablesorter td').mouseover(function(){
-               if(row_edit_bool) return;
+               if(row_edit_bool || show_filter_bool) return;
 
                var td_index = $(this).index();
                $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
@@ -504,7 +506,7 @@ endif;
                    }
                });
            }).mouseout(function(){
-               if(row_edit_bool) return;
+               if(row_edit_bool || show_filter_bool) return;
 
                var td_index = $(this).index();
                $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
