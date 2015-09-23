@@ -150,7 +150,7 @@ session_start();
                 $("#version").attr("value","");
                 $("#status").find("option:selected").removeAttr("selected");
                 $("#stage").find("option:selected").removeAttr("selected");
-                $(".stage_color").removeAttr("checked");
+                $(".stage_color").find("input").removeAttr("checked");
                 $("#note").text("");
                 $("#include_deleted").removeAttr("checked");
                 $("#include_finish").removeAttr("checked");
@@ -206,6 +206,7 @@ session_start();
     echo "$(\"#filter\").load(\"admin.php?filter=1".$get_filter_plan."\").slideToggle(500,function(){";
 ?>
                    $("#filter_add_img").toggle();
+                   row_edit_bool = true;
                });
            }});
 
@@ -486,6 +487,8 @@ endif;
 ?>
 
            $('table.tablesorter td').mouseover(function(){
+               if(row_edit_bool) return;
+
                var td_index = $(this).index();
                $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
                    var color = $.RGBToHex($(this).css("background-color"));
@@ -501,6 +504,8 @@ endif;
                    }
                });
            }).mouseout(function(){
+               if(row_edit_bool) return;
+
                var td_index = $(this).index();
                $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
                    var color = $.RGBToHex($(this).css("background-color"));

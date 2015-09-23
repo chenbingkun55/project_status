@@ -92,10 +92,10 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 ?>
             <table style="background-color:khaki;">
                 <tr>
-                    <td class="name"><INPUT id="name" class="input_ajax name" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
-                    <td class="theme_function"><INPUT id="theme_function" class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
-                    <td class="version"><INPUT id="version" class="input_ajax version" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
-                    <td class="status">
+                    <td class="name" style="background-color:khaki;"><INPUT id="name" class="input_ajax name" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
+                    <td class="theme_function" style="background-color:khaki;"><INPUT id="theme_function" class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
+                    <td class="version" style="background-color:khaki;"><INPUT id="version" class="input_ajax version" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
+                    <td class="status" style="background-color:khaki;">
                         <select id="status" class="select_ajax status" name="status" style=\"width:100%\">
                         <?PHP
                             if($filter) {
@@ -116,7 +116,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         ?>
                         </select>
                     </td>
-                    <td class="stage">
+                    <td class="stage" style="background-color:khaki;">
                         <select id="stage" class="select_ajax stage" name="stage">
                         <?PHP
                             if($filter) {
@@ -177,12 +177,12 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "</td>";
                         }
 ?>
-                    <td class="note">
+                    <td class="note" style="background-color:khaki;">
                         <textarea id="note" class="textarea_ajax" name="note" row="5"><?PHP echo @$update["note"]?></textarea>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="14" id="add_filter">
+                    <td colspan="14" id="add_filter" style="background-color:khaki;" >
                     </td>
                 </tr>
                 <tr>
