@@ -147,7 +147,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             $stage_array = $stage_json->decode(@$update['stage_date_json']);
                         }
 
-                        $colors = array("无" => "","red" => "red","green" => "green","yellow" => "yellow");
+                        $colors = array("无" => "","Red" => "Red","GreenYellow" => "GreenYellow","MediumSeaGreen" => "MediumSeaGreen");
                         foreach($stage_array as $stage => $date){
                             echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
                             echo "<input id=\"plandate_".$stage."\" class=\"input_ajax stage_date\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";

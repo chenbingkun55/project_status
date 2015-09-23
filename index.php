@@ -494,15 +494,15 @@ endif;
                var td_index = $(this).index();
                $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
                    var color = $.RGBToHex($(this).css("background-color"));
-                   if(color != "#FF0000" && color != "#008000" && color != "#FFFF00") {
-                       $(this).css("background-color","khaki");
+                   if(color != "#FF0000" && color != "#3CB371" && color != "#ADFF2F") {
+                       $(this).css("background-color","LightSkyBlue");
                    }
                });
 
                $(this).siblings().each(function(){
                    var color = $.RGBToHex($(this).css("background-color"));
-                   if(color != "#FF0000" && color != "#008000" && color != "#FFFF00") {
-                       $(this).css("background-color","khaki");
+                   if(color != "#FF0000" && color != "#3CB371" && color != "#ADFF2F") {
+                       $(this).css("background-color","LightSkyBlue");
                    }
                });
            }).mouseout(function(){
@@ -511,14 +511,14 @@ endif;
                var td_index = $(this).index();
                $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
                    var color = $.RGBToHex($(this).css("background-color"));
-                   if(color == "#F0E68C") {
+                   if(color == "#87CEFA") {
                        $(this).css("background-color","");
                    }
                });
 
                $(this).siblings().each(function(){
                    var color = $.RGBToHex( $(this).css("background-color"));
-                   if(color == "#F0E68C") {
+                   if(color == "#87CEFA") {
                        $(this).css("background-color","");
                    }
                });
