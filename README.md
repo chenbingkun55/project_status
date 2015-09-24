@@ -1,7 +1,6 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>/var/www/localhost/htdocs/project_status/README.md.text.html</title>
 <meta name="Generator" content="Vim/7.4">
 <meta name="plugin-version" content="vim7.4_v1">
 <meta name="syntax" content="none">
@@ -56,4 +55,3 @@
 </pre>
 </body>
 </html>
-<!-- vim: set foldmethod=manual : -->
