@@ -184,11 +184,11 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="14" id="add_filter" style="background-color:khaki;">
+                    <td colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" id="add_filter" style="background-color:khaki;">
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="14" style="text-align:center;background-color: khaki;"><INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />
+                    <td colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="text-align:center;background-color: khaki;"><INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />
 <?PHP
 if($id):
 ?>

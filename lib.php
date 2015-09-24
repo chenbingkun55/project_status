@@ -55,7 +55,7 @@ $config["DB_PASSWORD"] = "123456";
 $config["DB_NAME"] = "test";
 $config["DB_TABLE"] = "project_status";
 // STAGE 配置
-$config["STAGE"] = array("0" => "PreDEV","1" => "DEV","2" => "PreAlpha","3" => "Production");
+$config["STAGE"] = array("0" => "PreDEV","1" => "DEV","2" => "PreAlpha","3" => "Production","4" => "TestQA");
 
 class mysql_lib {
     var $con;

@@ -119,8 +119,8 @@ session_start();
                }
                $(".theme_function").css("width",(body_width/7)+"px");
                $(".theme_function").find("div").css("width",(body_width/7)+"px");
-               $(".note").css("width",(body_width/6)+"px");
-               $(".note").find("div").css("width",(body_width/6)+"px");
+               $(".note").css("width",(body_width/20*2)+"px");
+               $(".note").find("div").css("width",(body_width/20*2)+"px");
            }});
 
            $.extend({notify:function(notify_text,long){
@@ -418,7 +418,7 @@ session_start();
                        if(status != "success") {
                            $.notify('添加失败');
                        } else {
-                           $("table.tablesorter").append("<td class=\"show_opt\" colspan=\"14\">"+data+"</td>");
+                           $("table.tablesorter").append("<td class=\"show_opt\" colspan=\"<?PHP echo 6 + count($config["STAGE"]) * 2?>\">"+data+"</td>");
                        }
                    });
                    row_edit_bool = true;
@@ -431,7 +431,7 @@ session_start();
                if(touch_bool && touch_on) return;
 
                var edit_row = $(this).parent();
-               var show_opt = "<tr class=\"show_opt\"><td style=\"text-align:center\" colspan=\"14\">[<a href=\"admin.php?id="+edit_row.attr("id")+"\">修改</a>] [删除] [己完成]<td></tr>";
+               var show_opt = "<tr class=\"show_opt\"><td style=\"text-align:center\" colspan=\"<?PHP echo 6 + count($config["STAGE"]) * 2?>\">[<a href=\"admin.php?id="+edit_row.attr("id")+"\">修改</a>] [删除] [己完成]<td></tr>";
 
                if(row_edit_bool){
                    $('.show_opt').parent().find("td").each(function(){
@@ -450,7 +450,7 @@ session_start();
                        if(status != "success") {
                            $.notify('更新失败');
                        } else {
-                           edit_row.append("<td class=\"show_opt\" colspan=\"14\">"+data+"</td>");
+                           edit_row.append("<td class=\"show_opt\" colspan=\"<?PHP echo 6 + count($config["STAGE"]) * 2?>\">"+data+"</td>");
                        }
                    });
                    row_edit_bool = true;
