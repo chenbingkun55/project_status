@@ -90,13 +90,13 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
         echo "<form action=\"admin.php\" method=\"post\">";
     }
 ?>
-            <table style="background-color:khaki;">
+            <table class="admin_page">
                 <tr>
-                    <td class="name" style="background-color:khaki;"><INPUT id="name" class="input_ajax name" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
-                    <td class="theme_function" style="background-color:khaki;"><INPUT id="theme_function" class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
-                    <td class="version" style="background-color:khaki;"><INPUT id="version" class="input_ajax version" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
-                    <td class="status" style="background-color:khaki;">
-                        <select id="status" class="select_ajax status" name="status" style=\"width:100%\">
+                    <td class="name" style="background-color:khaki;"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
+                    <td class="theme_function" style="background-color:khaki;" ><div class="theme_function_div"><INPUT id="theme_function" class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
+                    <td class="version" style="background-color:khaki;" ><INPUT id="version" class="input_ajax" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
+                    <td class="status" style="background-color:khaki;" >
+                        <select id="status" class="select_ajax" name="status">
                         <?PHP
                             if($filter) {
                                 echo "<option value=\"\">空</option>";
@@ -116,8 +116,8 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         ?>
                         </select>
                     </td>
-                    <td class="stage" style="background-color:khaki;">
-                        <select id="stage" class="select_ajax stage" name="stage">
+                    <td class="stage"  style="background-color:khaki;">
+                        <select id="stage" class="select_ajax" name="stage">
                         <?PHP
                             if($filter) {
                                 echo "<option value=\"\">空</option>";
@@ -147,12 +147,12 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             $stage_array = $stage_json->decode(@$update['stage_date_json']);
                         }
 
-                        $colors = array("无" => "","Red" => "Red","GreenYellow" => "GreenYellow","MediumSeaGreen" => "MediumSeaGreen");
+                        $colors = array("无" => "","Red" => "Red","Yellow" => "GreenYellow","Green" => "MediumSeaGreen");
                         foreach($stage_array as $stage => $date){
                             echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
-                            echo "<input id=\"plandate_".$stage."\" class=\"input_ajax stage_date\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
+                            echo "<input id=\"plandate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
                             if($filter) {
-                                echo "<BR><input id=\"planenddate_".$stage."\" class=\"input_ajax stage_date\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".@$date["PlanEndDate"]."\"><BR>";
+                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".$date["PlanEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
@@ -163,9 +163,9 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             }
                             echo "</td>";
                             echo "<td class=\"stage_date\" style=\"background:".$date["RealColor"]."\">";
-                            echo "<input id=\"realdate_".$stage."\" class=\"input_ajax stage_date\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
+                            echo "<input id=\"realdate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
                             if($filter) {
-                                echo "<BR><input id=\"realenddate_".$stage."\" class=\"input_ajax stage_date\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".@$date["RealEndDate"]."\"><BR>";
+                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".$date["RealEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
@@ -177,12 +177,14 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             echo "</td>";
                         }
 ?>
-                    <td class="note" style="background-color:khaki;">
+                    <td class="note"  style="background-color:khaki;">
+                    <div class="note_div">
                         <textarea id="note" class="textarea_ajax" name="note" row="5"><?PHP echo @$update["note"]?></textarea>
+                    </div>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="14" id="add_filter" style="background-color:khaki;" >
+                    <td colspan="14" id="add_filter" style="background-color:khaki;">
                     </td>
                 </tr>
                 <tr>
@@ -218,8 +220,8 @@ else:
     if($filter):
 ?>
                         <INPUT type="SUBMIT" value="搜索" />
-                        <INPUT type="BUTTON" value="清空" onClick="$.clean_filter_plan();"/>
-                        <INPUT type="BUTTON" value="收起过滤面板" onClick="$.hide_filter();" />
+                        <INPUT type="BUTTON" value="清空条件" onClick="$.clean_filter_plan();"/>
+                        <INPUT type="BUTTON" value="收起面板" onClick="$.hide_filter();" />
 
 <?PHP
             if($_SESSION["admin"] == true && $allow->pass()):
@@ -303,7 +305,7 @@ else:
                             echo "<input id=\"plandate_".$stage."\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
-                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"\">".$key;
+                                    echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\">".$key;
                                 } else {
                                     echo "<input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\">".$key;
                                 }
@@ -352,6 +354,7 @@ endif;
                 }
             }
         ?>
+       $.col_width();
        });
    </script>
 <?PHP

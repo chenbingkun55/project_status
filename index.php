@@ -111,6 +111,18 @@ session_start();
        <script>
 
        $(document).ready(function(){
+           $.extend({col_width:function(){
+               var body_width = $(document.body).width();
+               if(body_width < 1600){
+                   $("body").css("width","1600px");
+                   body_width = 1600;
+               }
+               $(".theme_function").css("width",(body_width/7)+"px");
+               $(".theme_function").find("div").css("width",(body_width/7)+"px");
+               $(".note").css("width",(body_width/6)+"px");
+               $(".note").find("div").css("width",(body_width/6)+"px");
+           }});
+
            $.extend({notify:function(notify_text,long){
                var set_time = 3000;
                if(long) {
@@ -208,6 +220,7 @@ session_start();
                    $("#filter_add_img").toggle();
                    show_filter_bool = true;
                });
+           $.col_width();
            }});
 
            $.extend({hide_filter:function(){
@@ -451,6 +464,7 @@ endif;
 ?>
 
 <?PHP
+        echo "$.col_width();";
         switch($status) {
             case "all":
                 echo "$(\"#all\").attr(\"class\",\"cupid-green\");";
@@ -539,6 +553,10 @@ endif;
             $(this).css("overflow","hidden");
         });
        });
+
+       $("document").ready(function(){
+           $.col_width();
+       });
        </script>
     </HEAD>
     <BODY>
@@ -599,23 +617,23 @@ endif;
     endif;
 ?>
                 <tr>
-                    <th class="header name" rowspan="2">项目</th>
-                    <th class="header theme-function" rowspan="2">主题/功能</th>
-                    <th class="header version" rowspan="2">版本</th>
-                    <th class="header status" rowspan="2">状态</th>
-                    <th class="header stage" rowspan="2">阶段</th>
+                    <th class="name header" rowspan="2">项目</th>
+                    <th class="theme_function header" rowspan="2">主题/功能</th>
+                    <th class="version header" rowspan="2">版本</th>
+                    <th class="status header" rowspan="2">状态</th>
+                    <th class="stage header" rowspan="2">阶段</th>
                     <?PHP
                         foreach($config["STAGE"] as $stage){
                             echo "<th class=\"stage_title\" colspan=\"2\">".$stage."</th>";
                         }
                     ?>
-                    <th class="header" rowspan="2">备注</th>
+                    <th class="note header" rowspan="2">备注</th>
                 </tr>
                 <tr>
                 <?PHP
                     for($i=0; $i < count($config["STAGE"]); $i++){
-                        echo "<th class=\"header stage_date\">计划</th>";
-                        echo "<th class=\"header stage_date\">实际</th>";
+                        echo "<th class=\"stage_date header\">计划</th>";
+                        echo "<th class=\"stage_date header\">实际</th>";
                     }
                 ?>
                 </tr>
@@ -624,12 +642,13 @@ endif;
                 <?PHP
                     foreach($tbl_data as $row){
                         if(strcmp($row["deleted"],0) != 0) {
-                            $tag = "<td><div class=\"%s\"><s><del>%s</del></s><div></td>";
+                            $tag = "<td class=\"%s\"><div><s><del>%s</del></s></div></td>";
                         } else if(strcmp($row["finish"],0) != 0) {
-                            $tag = "<td><div class=\"%s\"><i><u>%s</u></i><div></td>";
+                            $tag = "<td class=\"%s\"><div><i><u>%s</u></i></div></td>";
                         }else {
-                            $tag = "<td><div class=\"%s\">%s<div></td>";
+                            $tag = "<td class=\"%s\"><div>%s</div></td>";
                         }
+
                         echo "<tr id=\"".$row["id"]."\">";
                         printf($tag,"name",$row["name"]);
                         printf($tag,"theme_function",$row["theme_function"]);
@@ -638,7 +657,7 @@ endif;
                         printf($tag,"stage",$row["stage"]);
 
                         $stage_data = $stage_json->decode($row['stage_date_json']);
-                        $stage_tag = "<td style=\"background:%s\"><div class=\"stage_date\">%s</div></td>";
+                        $stage_tag = "<td class=\"stage_date\" style=\"background:%s\"><div>%s</div></td>";
                         foreach($config["STAGE"] as $stage){
                             printf($stage_tag,$stage_data[$stage]["PlanColor"],$stage_data[$stage]["PlanDate"]);
                             printf($stage_tag,$stage_data[$stage]["RealColor"],$stage_data[$stage]["RealDate"]);

@@ -5,14 +5,19 @@ html {
 body {
     margin: 0px;
     padding: 5px;
-    width: 100%
-    overflow-x: hidden;
 	background-color: #e6EEEE;
 }
 
 table.tablesorter {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+table.admin_page {
     margin: 0px 0 0px;
     width: 100%;
+	background-color: khaki;
 }
 
 .main_notify {
@@ -33,7 +38,6 @@ table.tablesorter {
 
 .function {
     height: 40px;
-    width: 100%;
     text-align: center;
     vertical-align: middle;
     color: ForestGreen;
@@ -47,7 +51,6 @@ table.tablesorter {
 }
 
 .filter_term {
-    width: 100%;
     padding: 2px;
     text-align: center;
     font: bold 12px/1 "helvetica neue", helvetica, arial, sans-serif;
@@ -82,30 +85,28 @@ table.tablesorter {
 }
 
 
-input.input_ajax {
+.input_ajax {
     margin: 0px;
     padding: 0px;
-    width: 100%;
+    width: 96%;
 }
 
 .textarea_ajax {
     margin: 0px;
     padding: 0px;
-    width: 100%;
-    height: 100%;
+    width: 96%;
+}
+
+.select_ajax {
+    margin: 0px;
+    padding: 0px;
+    width: 96%;
 }
 
 .autocomplete {
-    list-style:none;
-    padding:0;
-    margin:0;
-}
-
-select.select_ajax {
-    margin: 0px;
     padding: 0px;
-    border: 1px;
-    width: 100%;
+    margin: 0px;
+    list-style:none;
 }
 
  .header {
@@ -116,60 +117,78 @@ select.select_ajax {
 	text-align: center;
 }
 
-
-
 .name {
-	width: 60px;
+    padding: 0px;
+    margin: 0px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap;
+    width: 60px !important;
 }
 
 .theme_function {
-	width: 160px;
+    padding: 0px;
+    margin: 0px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap;
+    width: 120px !important;
 }
 
 .version {
-	width: 50px;
+    padding: 0px;
+    margin: 0px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap;
+    width: 60px !important;
 }
 
 .status {
-	width: 60px;
+    padding: 0px;
+    margin: 0px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap;
+    width: 60px !important;
 }
 
 .stage {
-	width: 80px;
+    padding: 0px;
+    margin: 0px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap;
+    width: 80px !important;
+}
+
+.stage_title {
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 160px !important;
 }
 
 .stage_date {
-	width: 75px;
+    padding: 0px;
+    margin: 0px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space:nowrap;
+    width: 90px !important;
 }
 
 .stage_color {
     margin: 2px;
     padding: 2px;
     height: 20px;
-    width: auto;
+    width: 90px !important;
 }
 
 
 .note {
-	width: 200px;
+    padding: 0px;
+    margin: 0px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap;
