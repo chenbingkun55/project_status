@@ -79,7 +79,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 
         echo "<form action=\"index.php\" method=\"post\">";
         echo "<input type=\"hidden\" name=\"filter_submit\" value=\"1\">";
-        echo "<div class=\"filter_term\">";
+        echo "<div class=\"filter_term font-face-display\">";
         echo "<span><input id=\"include_deleted\" type=\"checkbox\" name=\"include_deleted\" style=\"vertical-align: middle\"".(empty($update["include_deleted"]) ? "" : "checked").">包括己删除</span>";
         echo "&nbsp;&nbsp;";
         echo "<span><input id=\"include_finish\" type=\"checkbox\" name=\"include_finish\" style=\"vertical-align: middle\" ".(empty($update["include_finish"]) ? "" : "checked").">包括己完成</span>";
@@ -90,13 +90,13 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
         echo "<form action=\"admin.php\" method=\"post\">";
     }
 ?>
-            <table class="admin_page">
+            <table class="admin_page font-face-display">
                 <tr>
-                    <td class="name" style="background-color:khaki;"><INPUT id="name" class="input_ajax" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
-                    <td class="theme_function" style="background-color:khaki;" ><div class="theme_function_div"><INPUT id="theme_function" class="input_ajax" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
-                    <td class="version" style="background-color:khaki;" ><INPUT id="version" class="input_ajax" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
-                    <td class="status" style="background-color:khaki;" >
-                        <select id="status" class="select_ajax" name="status">
+                    <td class="name font-face-display" style="background-color:khaki;"><INPUT id="name" class="input_ajax font-face-display" type="text" name="name" value="<?PHP echo @$update["name"] ?>" onClick="$.list_names();"/></td>
+                    <td class="theme_function font-face-display" style="background-color:khaki;" ><div><INPUT id="theme_function" class="input_ajax font-face-display" type="text" name="theme_function" value="<?PHP echo @$update["theme_function"] ?>"/></td>
+                    <td class="version font-face-display" style="background-color:khaki;" ><INPUT id="version" class="input_ajax font-face-display" type="text" name="version" value="<?PHP echo @$update["version"] ?>"/></td>
+                    <td class="status font-face-display" style="background-color:khaki;" >
+                        <select id="status" class="select_ajax font-face-display" name="status">
                         <?PHP
                             if($filter) {
                                 echo "<option value=\"\">空</option>";
@@ -116,8 +116,8 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                         ?>
                         </select>
                     </td>
-                    <td class="stage"  style="background-color:khaki;">
-                        <select id="stage" class="select_ajax" name="stage">
+                    <td class="stage font-face-display"  style="background-color:khaki;">
+                        <select id="stage" class="select_ajax font-face-display" name="stage">
                         <?PHP
                             if($filter) {
                                 echo "<option value=\"\">空</option>";
@@ -154,37 +154,37 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 
                         $colors = array("无" => "","Red" => "Red","Yellow" => "GreenYellow","Green" => "MediumSeaGreen");
                         foreach($stage_array as $stage => $date){
-                            echo "<td class=\"stage_date\" style=\"background:".$date["PlanColor"]."\">";
-                            echo "<input id=\"plandate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
+                            echo "<td class=\"stage_date font-face-display\" style=\"background:".$date["PlanColor"]."\">";
+                            echo "<input id=\"plandate_".$stage."\" class=\"input_ajax font-face-display\" type=\"text\" name=\"PlanDate-".$stage."\" value=\"".$date["PlanDate"]."\">";
                             if($filter) {
-                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".@$date["PlanEndDate"]."\">";
+                                echo "<input id=\"planenddate_".$stage."\" class=\"input_ajax font-face-display\" type=\"text\" name=\"PlanEndDate-".$stage."\" value=\"".@$date["PlanEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["PlanColor"]) == 0) {
-                                    echo "<div class=\"stage_color\" style=\"background-color:".$color.";\"><input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"vertical-align:middle;\">".$key."</div>";
+                                    echo "<div class=\"stage_color font-face-display\" style=\"background-color:".$color.";\"><input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"vertical-align:middle;\">".$key."</div>";
                                 } else {
-                                    echo "<div class=\"stage_color\" style=\"background-color:".$color.";\"><input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" style=\"vertical-align:middle;\">".$key."</div>";
+                                    echo "<div class=\"stage_color font-face-display\" style=\"background-color:".$color.";\"><input type=\"radio\" name=\"PlanColor-".$stage."\" value=\"".$color."\" style=\"vertical-align:middle;\">".$key."</div>";
                                 }
                             }
                             echo "</td>";
-                            echo "<td class=\"stage_date\" style=\"background:".$date["RealColor"]."\">";
-                            echo "<input id=\"realdate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
+                            echo "<td class=\"stage_date font-face-display\" style=\"background:".$date["RealColor"]."\">";
+                            echo "<input id=\"realdate_".$stage."\" class=\"input_ajax font-face-display\" type=\"text\" name=\"RealDate-".$stage."\" value=\"".$date["RealDate"]."\">";
                             if($filter) {
-                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".@$date["RealEndDate"]."\">";
+                                echo "<input id=\"realenddate_".$stage."\" class=\"input_ajax font-face-display\" type=\"text\" name=\"RealEndDate-".$stage."\" value=\"".@$date["RealEndDate"]."\">";
                             }
                             foreach($colors as $key => $color){
                                 if(strcmp($color,$date["RealColor"]) == 0) {
-                                    echo "<div class=\"stage_color\" style=\"background-color:".$color.";\"><input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"vertical-align:middle;\">".$key."</div>";
+                                    echo "<div class=\"stage_color font-face-display\" style=\"background-color:".$color.";\"><input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" checked=\"checked\" style=\"vertical-align:middle;\">".$key."</div>";
                                 } else {
-                                    echo "<div class=\"stage_color\" style=\"background-color:".$color.";\"><input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" style=\"vertical-align:middle;\">".$key."</div>";
+                                    echo "<div class=\"stage_color font-face-display\" style=\"background-color:".$color.";\"><input type=\"radio\" name=\"RealColor-".$stage."\" value=\"".$color."\" style=\"vertical-align:middle;\">".$key."</div>";
                                 }
                             }
                             echo "</td>";
                         }
 ?>
-                    <td class="note"  style="background-color:khaki;">
-                    <div class="note_div">
-                        <textarea id="note" class="textarea_ajax" name="note" row="5"><?PHP echo @$update["note"]?></textarea>
+                    <td class="note font-face-display"  style="background-color:khaki;">
+                    <div class="font-face-display">
+                        <textarea id="note" class="textarea_ajax font-face-display" name="note" row="5"><?PHP echo @$update["note"]?></textarea>
                     </div>
                     </td>
                 </tr>
@@ -199,45 +199,45 @@ if($id):
 ?>
 <?PHP
                 if(@$update["finish"] == 0 && @$update["deleted"] == 0){
-                        echo "<INPUT type=\"SUBMIT\" value=\"更新\" onClick=\"$.submit();\" />";
-                        echo "<INPUT type=\"BUTTON\" value=\"取消\" onClick=\"$.edit_cancel();\" />";
+                        echo "<INPUT class=\"font-face-display\" type=\"SUBMIT\" value=\"更新\" onClick=\"$.submit();\" />";
+                        echo "<INPUT class=\"font-face-display\" type=\"BUTTON\" value=\"取消\" onClick=\"$.edit_cancel();\" />";
                         echo "---";
                 }
 
                 if(@$update["finish"] == 0 ){
                     if(@$update["deleted"] == 0 ){
-                        echo "<INPUT type=\"BUTTON\" value=\"标记[己完成]\" style=\"background:red;\" onClick=\"$.finish(".@$update["id"].");\" />";
+                        echo "<INPUT class=\"font-face-display\" type=\"BUTTON\" value=\"标记[己完成]\" style=\"background:red;\" onClick=\"$.finish(".@$update["id"].");\" />";
                     }
                 } else {
-                    echo "<INPUT type=\"BUTTON\" value=\"标记[未完成]\" style=\"background:yellow;\" onClick=\"$.finish(".@$update["id"].",true);\" />";
+                    echo "<INPUT class=\"font-face-display\" type=\"BUTTON\" value=\"标记[未完成]\" style=\"background:yellow;\" onClick=\"$.finish(".@$update["id"].",true);\" />";
                 }
 
                 if(@$update["deleted"] == 0 ){
                     if(@$update["finish"] == 0 ){
-                        echo "<INPUT type=\"BUTTON\" value=\"删除\" style=\"background:red;\" onClick=\"$.delete(".@$update["id"].");\" />";
+                        echo "<INPUT class=\"font-face-display\" type=\"BUTTON\" value=\"删除\" style=\"background:red;\" onClick=\"$.delete(".@$update["id"].");\" />";
                     }
                 } else {
-                    echo "<INPUT type=\"BUTTON\" value=\"还原\" style=\"background:yellow;\" onClick=\"$.delete(".@$update["id"].",true);\" />";
+                    echo "<INPUT class=\"font-face-display\" type=\"BUTTON\" value=\"还原\" style=\"background:yellow;\" onClick=\"$.delete(".@$update["id"].",true);\" />";
                 }
 
 else:
 
     if($filter):
 ?>
-                        <INPUT type="SUBMIT" value="搜索" />
-                        <INPUT type="BUTTON" value="清空条件" onClick="$.clean_filter_plan();"/>
-                        <INPUT type="BUTTON" value="收起面板" onClick="$.hide_filter();" />
+                        <INPUT class="font-face-display" type="SUBMIT" value="搜索" />
+                        <INPUT class="font-face-display" type="BUTTON" value="清空条件" onClick="$.clean_filter_plan();"/>
+                        <INPUT class="font-face-display" type="BUTTON" value="收起面板" onClick="$.hide_filter();" />
 
 <?PHP
             if($_SESSION["admin"] == true && $allow->pass()):
-                        echo ($show_save_filter) ? "<INPUT type=\"BUTTON\" value=\"将当前Filter设置为默认\" onClick=\"$.save_filter();\" />" : "";
-                        echo ($find_global_filter) ? "<INPUT type=\"BUTTON\" value=\"清空默认Filter过滤\" onClick=\"$.unsave_filter();\" />" : "";
+                        echo ($show_save_filter) ? "<INPUT class=\"font-face-display\" type=\"BUTTON\" value=\"将当前Filter设置为默认\" onClick=\"$.save_filter();\" />" : "";
+                        echo ($find_global_filter) ? "<INPUT class=\"font-face-display\" type=\"BUTTON\" value=\"清空默认Filter过滤\" onClick=\"$.unsave_filter();\" />" : "";
             endif;
 
     else:
 ?>
-                        <INPUT type="SUBMIT" value="添加" />
-                        <INPUT type="BUTTON" value="取消" onClick="$.edit_cancel();" />
+                        <INPUT class="font-face-display" type="SUBMIT" value="添加" />
+                        <INPUT class="font-face-display" type="BUTTON" value="取消" onClick="$.edit_cancel();" />
 <?PHP
     endif;
 endif;
@@ -331,7 +331,7 @@ else:
 ?>
                 <tr>
                     <td>备注:</td>
-                    <td><textarea name="note" class=\"textarea_ajax\" row="5"><?PHP echo @$update["note"]?></textarea></td>
+                    <td><textarea name="note" class=\"textarea_ajax font-face-display\" row="5"><?PHP echo @$update["note"]?></textarea></td>
                 </tr>
                 <tr>
                     <INPUT type="hidden" name="id" value="<?PHP echo @$update["id"]?>" />

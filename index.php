@@ -117,6 +117,7 @@ session_start();
                    $("body").css("width","1600px");
                    body_width = 1600;
                }
+               $(".main_notify").css("left",(body_width/10*6)+"px");
                $(".theme_function").css("width",(body_width/7)+"px");
                $(".theme_function").find("div").css("width",(body_width/7)+"px");
                $(".note").css("width",(body_width/20*2)+"px");
@@ -560,13 +561,13 @@ endif;
        </script>
     </HEAD>
     <BODY>
-        <div class="main_notify" id="main_notify"></div>
+        <div class="main_notify font-notify" id="main_notify"></div>
         </div>
-        <table id="project_status_list" class="tablesorter">
+        <table id="project_status_list" class="tablesorter font-face-display">
             <thead>
                 <tr>
                 <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center;height:60px;">
-                    <h1><a href="http://bzb.igg.com"><img class="logo" src="http://192.168.23.220/food_order/public/images/BZBee%20logo%20100X100.png" /></a>&nbsp;BZBee Productions 项目状态</h1>
+                    <div class="font-header"><a href="http://bzb.igg.com"><img class="logo" src="http://192.168.23.220/food_order/public/images/BZBee%20logo%20100X100.png" /></a>&nbsp;BZBee Productions 项目状态</div>
                 </th>
                 </tr>
 <?PHP
@@ -579,21 +580,21 @@ endif;
                                 <div class="php">
                                     <span onClick="$.show_filter();"><img id="filter_img" src="public/img/filter_24x24.png" style="vertical-align: middle;"></span>&nbsp;
                                     <!--<span onClick="$.add_filter();"><img id="filter_add_img" src="public/img/filter_add_24x24.png" style="vertical-align: middle;display: none;"></span>&nbsp;-->
-                                    <a href="index.php?status=in_process"><button id="in_process" class="minimal">进行中</button></a>&nbsp;
-                                    <a href="index.php?status=all"><button id="all" class="minimal">所有</button></a>
-                                    <a href="index.php?status=finish"><button id="finish" class="minimal">己完成</button></a>&nbsp;
-                                    <a href="index.php?status=deleted"><button id="deleted" class="minimal">己删除</button></a>&nbsp;
-                                    <a href="index.php"><button id="refresh" class="cupid-green">刷新</button></a>&nbsp;
+                                    <a href="index.php?status=in_process"><button id="in_process" class="minimal font-face-display">进行中</button></a>&nbsp;
+                                    <a href="index.php?status=all"><button id="all" class="minimal font-face-display">所有</button></a>
+                                    <a href="index.php?status=finish"><button id="finish" class="minimal font-face-display">己完成</button></a>&nbsp;
+                                    <a href="index.php?status=deleted"><button id="deleted" class="minimal font-face-display">己删除</button></a>&nbsp;
+                                    <a href="index.php"><button id="refresh" class="cupid-green font-face-display">刷新</button></a>&nbsp;
                                 </div>
                             </div>
                             <div class="export" onClick="$.export();">
-                                <button class="minimal">导出 Excel</button>
+                                <button class="minimal font-face-display">导出 Excel</button>
                             </div>
 <?PHP
         if($allow->pass()):
 ?>
                             <div class="model_text" id="model_text" onClick="$.model_switch();">
-                                <button class="minimal">只读模式</button>
+                                <button class="minimal font-face-display">只读模式</button>
                             </div>
 <?PHP
         endif;
@@ -617,23 +618,23 @@ endif;
     endif;
 ?>
                 <tr>
-                    <th class="name header" rowspan="2">项目</th>
-                    <th class="theme_function header" rowspan="2">主题/功能</th>
-                    <th class="version header" rowspan="2">版本</th>
-                    <th class="status header" rowspan="2">状态</th>
-                    <th class="stage header" rowspan="2">阶段</th>
+                    <th class="name header font-table-header" rowspan="2">项目</th>
+                    <th class="theme_function header font-table-header" rowspan="2">主题/功能</th>
+                    <th class="version header font-table-heaser" rowspan="2">版本</th>
+                    <th class="status header font-table-header" rowspan="2">状态</th>
+                    <th class="stage header font-table-header" rowspan="2">阶段</th>
                     <?PHP
                         foreach($config["STAGE"] as $stage){
-                            echo "<th class=\"stage_title\" colspan=\"2\">".$stage."</th>";
+                            echo "<th class=\"stage_title font-table-header\" colspan=\"2\">".$stage."</th>";
                         }
                     ?>
-                    <th class="note header" rowspan="2">备注</th>
+                    <th class="note header font-table-header" rowspan="2">备注</th>
                 </tr>
                 <tr>
                 <?PHP
                     for($i=0; $i < count($config["STAGE"]); $i++){
-                        echo "<th class=\"stage_date header\">计划</th>";
-                        echo "<th class=\"stage_date header\">实际</th>";
+                        echo "<th class=\"stage_date header font-table-header\">计划</th>";
+                        echo "<th class=\"stage_date header font-table-header\">实际</th>";
                     }
                 ?>
                 </tr>
@@ -642,11 +643,11 @@ endif;
                 <?PHP
                     foreach($tbl_data as $row){
                         if(strcmp($row["deleted"],0) != 0) {
-                            $tag = "<td class=\"%s\"><div><s><del>%s</del></s></div></td>";
+                            $tag = "<td class=\"%s font-face-display\"><div><s><del>%s</del></s></div></td>";
                         } else if(strcmp($row["finish"],0) != 0) {
-                            $tag = "<td class=\"%s\"><div><i><u>%s</u></i></div></td>";
+                            $tag = "<td class=\"%s font-face-display\"><div><i><u>%s</u></i></div></td>";
                         }else {
-                            $tag = "<td class=\"%s\"><div>%s</div></td>";
+                            $tag = "<td class=\"%s font-face-display\"><div>%s</div></td>";
                         }
 
                         echo "<tr id=\"".$row["id"]."\">";
@@ -657,7 +658,7 @@ endif;
                         printf($tag,"stage",$row["stage"]);
 
                         $stage_data = $stage_json->decode($row['stage_date_json']);
-                        $stage_tag = "<td class=\"stage_date\" style=\"background:%s\"><div>%s</div></td>";
+                        $stage_tag = "<td class=\"stage_date font-face-display\" style=\"background:%s\"><div>%s</div></td>";
                         foreach($config["STAGE"] as $stage){
                             printf($stage_tag,$stage_data[$stage]["PlanColor"],$stage_data[$stage]["PlanDate"]);
                             printf($stage_tag,$stage_data[$stage]["RealColor"],$stage_data[$stage]["RealDate"]);
