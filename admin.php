@@ -147,6 +147,11 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
                             $stage_array = $stage_json->decode(@$update['stage_date_json']);
                         }
 
+                        // [FIX] 当添加新 stage 后, 修改之前的数据时, 新的 stage 
+                        // 不显示出来
+                        $stage_empty = $stage_json->stage_date_init();
+                        $stage_array = array_merge($stage_empty,$stage_array);
+
                         $colors = array("无" => "","Red" => "Red","Yellow" => "GreenYellow","Green" => "MediumSeaGreen");
                         foreach($stage_array as $stage => $date){
                             echo "<td class=\"stage_date font-face-display\" style=\"background:".$date["PlanColor"]."\">";
