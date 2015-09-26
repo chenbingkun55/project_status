@@ -298,7 +298,7 @@ session_start();
                            $.notify("进入编辑模式<BR>[添加\\修改]: 双击表格标题或行<BR>[触屏]: Touch表格标题或行下拉.",true);
                            model_edit = true;
                            $("#model_status").attr("enable","1");
-                           $("#model_text").html("<button class=\"cupid-green\">编辑模式</button>");
+                           $("#model_text").html("<button class=\"cupid-green\" title=\"只读\\编辑模式切换按钮\">编辑模式</button>");
                        }
                     });
                }
@@ -528,11 +528,11 @@ endif;
         if(@$_SESSION["model_edit"] == true) {
             echo "var model_edit = true;";
             echo "$(\"#model_status\").attr(\"enable\",\"1\");";
-            echo "$(\"#model_text\").html(\"<button class='cupid-green'>编辑模式</button>\");";
+            echo "$(\"#model_text\").html(\"<button class='cupid-green' title='只读\\编辑模式切换按钮'>编辑模式</button>\");";
         } else {
             echo "var model_edit = false;";
             echo "$(\"#model_status\").attr(\"enable\",\"0\");";
-            echo "$(\"#model_text\").html(\"<button class='minimal'>只读模式</button>\");";
+            echo "$(\"#model_text\").html(\"<button class='minimal' title=\"只读\\编辑模式切换按钮\">只读模式</button>\");";
         }
 
         if(@$_SESSION["chart_bool"] == true) {
@@ -617,24 +617,24 @@ endif;
                         <div class="function">
                             <div class="filter_plan">
                                 <div class="php">
-                                    <span onClick="$.show_filter();"><img id="filter_img" src="public/img/filter_24x24.png" style="vertical-align: middle;"></span>&nbsp;
-                                    <span><img id="chart_img" src="public/img/chart_24x24.png" style="vertical-align: middle;" onClick="$.show_chart();"></span>&nbsp;
+                                    <span onClick="$.show_filter();"><img id="filter_img" title="显示\隐藏过滤面板" src="public/img/filter_24x24.png" style="vertical-align: middle;"></span>&nbsp;
+                                    <span><img id="chart_img" src="public/img/chart_24x24.png" title="切换图表与表格" style="vertical-align: middle;" onClick="$.show_chart();"></span>&nbsp;
                                     <!--<span onClick="$.add_filter();"><img id="filter_add_img" src="public/img/filter_add_24x24.png" style="vertical-align: middle;display: none;"></span>&nbsp;-->
-                                    <a href="index.php?status=in_process"><button id="in_process" class="minimal font-face-display">进行中</button></a>&nbsp;
-                                    <a href="index.php?status=all"><button id="all" class="minimal font-face-display">所有</button></a>
-                                    <a href="index.php?status=finish"><button id="finish" class="minimal font-face-display">己完成</button></a>&nbsp;
-                                    <a href="index.php?status=deleted"><button id="deleted" class="minimal font-face-display">己删除</button></a>&nbsp;
-                                    <a href="index.php"><button id="refresh" class="cupid-green font-face-display">刷新</button></a>&nbsp;
+                                    <a href="index.php?status=in_process"><button id="in_process" class="minimal font-face-display" title="还未完成的主题\功能">进行中</button></a>&nbsp;
+                                    <a href="index.php?status=all"><button id="all" class="minimal font-face-display" title="显示所有主题功能,包括己完成\己删除">所有</button></a>
+                                    <a href="index.php?status=finish"><button id="finish" class="minimal font-face-display" title="显示己完成">己完成</button></a>&nbsp;
+                                    <a href="index.php?status=deleted"><button id="deleted" class="minimal font-face-display" title="显示己删除">己删除</button></a>&nbsp;
+                                    <a href="index.php"><button id="refresh" class="cupid-green font-face-display" title="重新载入index页面">刷新</button></a>&nbsp;
                                 </div>
                             </div>
                             <div class="export" onClick="$.export();">
-                                <button class="minimal font-face-display">导出 Excel</button>
+                                <button class="minimal font-face-display" title="将当前显示的表格导出为Excel文档">导出 Excel</button>
                             </div>
 <?PHP
         if($allow->pass()):
 ?>
                             <div class="model_text" id="model_text" onClick="$.model_switch();">
-                                <button class="minimal font-face-display">只读模式</button>
+                                <button class="minimal font-face-display" title="只读\编辑模式切换按钮">只读模式</button>
                             </div>
 <?PHP
         endif;
@@ -655,15 +655,9 @@ endif;
                     </th>
                 </tr>
 <?PHP
-    endif;
-    if(@$_SESSION["chart_bool"]):
-?>
-            </thead>
-            <tbody>
-                <tr>
-                    <th id="chart_report" class="chart_report" colspan="<?PHP echo $col_num; ?>">
-<?PHP
         if($filter_submit) {
+            echo "<tr><th class=\"chart_report\" colspan=\"".$col_num."\" style=\"background-color: khaki;
+\">";
             $curent_where = "<div class=\"where\">过滤条件: ";
             foreach($_SESSION["filter_array"] as $key => $row){
                 if(! empty($row) && strcmp($key,"stage_date_json") != 0){
@@ -687,22 +681,25 @@ endif;
             $curent_where = rtrim($curent_where,"<label class=\"where_and\">AND</label> ");
             $curent_where .= "</div>";
             echo $curent_where;
+            echo "</th></tr>";
         }
+    endif;
+    if(@$_SESSION["chart_bool"]):
 ?>
-                    </th>
-                </tr>
+            </thead>
+            <tbody>
                 <tr>
                     <td id="chart_report" class="chart_report" colspan="<?PHP echo $col_num/2; ?>">
-                        <div id="total_status_chart_pie" class="chart" style="width:300px;height:300px"></div>
-                        <div id="total_stage_chart_pie" class="chart" style="width:300px;height:300px"></div>
-                        <div id="total_status_chart" class="chart" style="width:300px;height:300px"></div>
-                        <div id="total_stage_chart" class="chart" style="width:300px;height:300px"></div>
+                        <div id="total_status_chart_pie" class="chart" style="width:385px;height:300px"></div>
+                        <div id="total_stage_chart_pie" class="chart" style="width:385px;height:300px"></div>
+                        <div id="total_status_chart" class="chart" style="width:385px;height:300px"></div>
+                        <div id="total_stage_chart" class="chart" style="width:385px;height:300px"></div>
                     </td>
                 </tr>
                 <tr>
                     <td id="chart_report" class="chart_report" colspan="<?PHP echo $col_num/2; ?>">
-                        <div id="project_status_chart" class="chart" style="width:300px;height:300px"></div>
-                        <div id="project_stage_chart" class="chart" style="width:300px;height:300px"></div>
+                        <div id="project_status_chart" class="chart" style="width:385px;height:300px"></div>
+                        <div id="project_stage_chart" class="chart" style="width:385px;height:300px"></div>
                     </td>
                 </tr>
                 <?PHP
@@ -1141,19 +1138,19 @@ endif;
                         }
 
                         if(strcmp($row["deleted"],0) != 0) {
-                            $tag = "<td class=\"%s font-face-display\"><div><s><del>%s</del></s></div></td>";
+                            $tag = "<td class=\"%s font-face-display\" title=\"%s\"><div><s><del>%s</del></s></div></td>";
                         } else if(strcmp($row["finish"],0) != 0) {
-                            $tag = "<td class=\"%s font-face-display\"><div><i><u>%s</u></i></div></td>";
+                            $tag = "<td class=\"%s font-face-display\" title=\"%s\"><div><i><u>%s</u></i></div></td>";
                         }else {
-                            $tag = "<td class=\"%s font-face-display\"><div>%s</div></td>";
+                            $tag = "<td class=\"%s font-face-display\" title=\"%s\"><div>%s</div></td>";
                         }
 
                         echo "<tr id=\"".$row["id"]."\">";
-                        printf($tag,"name",$row["name"]);
-                        printf($tag,"theme_function",$row["theme_function"]);
-                        printf($tag,"version",$row["version"]);
-                        printf($tag,"status",$row["status"]);
-                        printf($tag,"stage",$row["stage"]);
+                        printf($tag,"name",$row["name"],$row["name"]);
+                        printf($tag,"theme_function",$row["theme_function"],$row["theme_function"]);
+                        printf($tag,"version",$row["version"],$row["version"]);
+                        printf($tag,"status",$row["status"],$row["status"]);
+                        printf($tag,"stage",$row["stage"],$row["stage"]);
 
                         $stage_data = $stage_json->decode($row['stage_date_json']);
                         $stage_tag = "<td class=\"stage_date font-face-display\" style=\"background:%s\"><div>%s</div></td>";
@@ -1161,7 +1158,7 @@ endif;
                             printf($stage_tag,$stage_data[$stage]["PlanColor"],$stage_data[$stage]["PlanDate"]);
                             printf($stage_tag,$stage_data[$stage]["RealColor"],$stage_data[$stage]["RealDate"]);
                         }
-                        printf($tag,"note",$row["note"]);
+                        printf($tag,"note",$row["note"],$row["note"]);
                     echo "</tr>";
                     }
 

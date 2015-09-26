@@ -110,29 +110,31 @@ table.admin_page {
 }
 
 .where{
-    font-size: 14px;
-    padding: 2px;
+    margin: 0px;
+    padding: 5px;
     height: 20px;
-    overflow: auto;
-	background-color: khaki;
+    font-size: 14px;
 }
 
 .where_and {
     padding: 2px;
+    margin: 2px;
+    border: medium double rgb(250,0,255);
     color: mediumspringgreen;
 }
 
 .where_key {
     padding: 2px;
-    border: 2px;
+    margin: 2px;
     color: mediumspringgreen;
     border: medium double rgb(250,0,255);
-    vertical-align: middle;
     background-color: yellow;
 }
 
 .where_value {
     padding: 2px;
+    margin: 2px;
+    border: medium double rgb(250,0,255);
     color: blue;
     background-color: yellowgreen;
 }
