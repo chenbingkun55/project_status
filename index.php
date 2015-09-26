@@ -656,7 +656,7 @@ endif;
                 </tr>
 <?PHP
         if($filter_submit) {
-            echo "<tr><th class=\"chart_report\" colspan=\"".$col_num."\" style=\"background-color: khaki;
+            echo "<tr><th class=\"chart_report font-face-display\" colspan=\"".$col_num."\" style=\"background-color: khaki;
 \">";
             $curent_where = "<div class=\"where\">过滤条件: ";
             foreach($_SESSION["filter_array"] as $key => $row){
@@ -689,17 +689,17 @@ endif;
             </thead>
             <tbody>
                 <tr>
-                    <td id="chart_report" class="chart_report" colspan="<?PHP echo $col_num/2; ?>">
-                        <div id="total_status_chart_pie" class="chart" style="width:385px;height:300px"></div>
-                        <div id="total_stage_chart_pie" class="chart" style="width:385px;height:300px"></div>
-                        <div id="total_status_chart" class="chart" style="width:385px;height:300px"></div>
-                        <div id="total_stage_chart" class="chart" style="width:385px;height:300px"></div>
+                    <td id="chart_report" class="chart_report font-face-display" colspan="<?PHP echo $col_num/2; ?>">
+                        <div id="total_status_chart_pie" class="chart font-face-display" style="width:385px;height:300px"></div>
+                        <div id="total_stage_chart_pie" class="chart font-face-display" style="width:385px;height:300px"></div>
+                        <div id="total_status_chart" class="chart font-face-display" style="width:385px;height:300px"></div>
+                        <div id="total_stage_chart" class="chart font-face-display" style="width:385px;height:300px"></div>
                     </td>
                 </tr>
                 <tr>
-                    <td id="chart_report" class="chart_report" colspan="<?PHP echo $col_num/2; ?>">
-                        <div id="project_status_chart" class="chart" style="width:385px;height:300px"></div>
-                        <div id="project_stage_chart" class="chart" style="width:385px;height:300px"></div>
+                    <td id="chart_report" class="chart_report font-face-display" colspan="<?PHP echo $col_num/2; ?>">
+                        <div id="project_status_chart" class="chart font-face-display" style="width:385px;height:300px"></div>
+                        <div id="project_stage_chart" class="chart font-face-display" style="width:385px;height:300px"></div>
                     </td>
                 </tr>
                 <?PHP
