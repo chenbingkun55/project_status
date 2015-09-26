@@ -119,16 +119,13 @@ table.admin_page {
 .where_and {
     padding: 2px;
     margin: 2px;
-    border: medium double rgb(250,0,255);
-    color: mediumspringgreen;
+    color: green;
 }
 
 .where_key {
     padding: 2px;
     margin: 2px;
-    color: mediumspringgreen;
-    border: medium double rgb(250,0,255);
-    background-color: yellow;
+    color: green;
 }
 
 .where_value {

@@ -440,7 +440,7 @@ session_start();
             });
 
             $("table.tablesorter th").bind("touchend dblclick",function(){
-               if(! model_edit) return;
+               if(! model_edit || chart_bool) return;
                if(touch_bool && touch_on) return;
 
                if(row_edit_bool){
@@ -461,7 +461,7 @@ session_start();
                $('.show_opt').remove();
             });
            $('table.tablesorter td').bind("touchend dblclick",function(){
-               if(! model_edit) return;
+               if(! model_edit || chart_bool) return;
                if(touch_bool && touch_on) return;
 
                var edit_row = $(this).parent();
@@ -532,7 +532,7 @@ endif;
         } else {
             echo "var model_edit = false;";
             echo "$(\"#model_status\").attr(\"enable\",\"0\");";
-            echo "$(\"#model_text\").html(\"<button class='minimal' title=\"只读\\编辑模式切换按钮\">只读模式</button>\");";
+            echo "$(\"#model_text\").html(\"<button class='minimal' title='只读\\编辑模式切换按钮'>只读模式</button>\");";
         }
 
         if(@$_SESSION["chart_bool"] == true) {
@@ -543,7 +543,7 @@ endif;
 ?>
 
            $('table.tablesorter td').mouseover(function(){
-               if(row_edit_bool || show_filter_bool) return;
+               if(row_edit_bool || show_filter_bool || chart_bool) return;
 
                var td_index = $(this).index();
                $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
@@ -560,7 +560,7 @@ endif;
                    }
                });
            }).mouseout(function(){
-               if(row_edit_bool || show_filter_bool) return;
+               if(row_edit_bool || show_filter_bool || chart_bool) return;
 
                var td_index = $(this).index();
                $("#project_status_list tr:not(:first) td:nth-child("+(td_index + 1)+")").each(function(){
@@ -656,12 +656,12 @@ endif;
                 </tr>
 <?PHP
         if($filter_submit) {
-            echo "<tr><th class=\"chart_report font-face-display\" colspan=\"".$col_num."\" style=\"background-color: khaki;
+            echo "<tr><td class=\"chart_report font-face-display\" colspan=\"".$col_num."\" style=\"background-color: khaki;
 \">";
             $curent_where = "<div class=\"where\">过滤条件: ";
             foreach($_SESSION["filter_array"] as $key => $row){
                 if(! empty($row) && strcmp($key,"stage_date_json") != 0){
-                    $curent_where .= "<label class=\"where_key\">".$key."</label>=<label class=\"where_value\">".$row."</label> <label class=\"where_and\">AND</label> ";
+                    $curent_where .= "<label class=\"where_key\">".$key."</label>=<label class=\"where_value\">".$row."</label><label class=\"where_and\">AND</label>";
                 }
 
                 if(strcmp($key,"stage_date_json") == 0){
@@ -671,17 +671,17 @@ endif;
                         foreach($config["STAGE"] as $item){
                             foreach($date_array[$item] as $k => $v){
                                 if(! empty($v)){
-                                    $curent_where .= "<label class=\"where_key\">".$item."[".$k."]</label>=<label class=\"where_value\">".$v."</label> <label class=\"where_and\">AND</label> ";
+                                    $curent_where .= "<label class=\"where_key\">".$item."[".$k."]</label>=<label class=\"where_value\">".$v."</label><label class=\"where_and\">AND</label>";
                                 }
                             }
                         }
                     }
                 }
             }
-            $curent_where = rtrim($curent_where,"<label class=\"where_and\">AND</label> ");
+            $curent_where = substr($curent_where,0,strripos($curent_where,"<label",0));
             $curent_where .= "</div>";
             echo $curent_where;
-            echo "</th></tr>";
+            echo "</td></tr>";
         }
     endif;
     if(@$_SESSION["chart_bool"]):
