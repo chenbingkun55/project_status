@@ -47,15 +47,26 @@ session_start();
     // 管理员模式
     $_SESSION["admin"] = $allow->pass();
 
+    $col_num = 6 + count($config["STAGE"]) * 2;
     $status = trim(@$_REQUEST["status"]);
     $filter_submit = (strcmp(@$_REQUEST["filter_submit"],"1") == 0) ? true : false;
+    $filter_status = (strcmp(@$_REQUEST["filter_status"],"") == 0) ? "" : trim(@$_REQUEST["filter_status"]);
+    $filter_stage = (strcmp(@$_REQUEST["filter_stage"],"") == 0) ?  "" : trim(@$_REQUEST["filter_stage"]);
     $filter = (strcmp(@$_REQUEST["filter"],"1") == 0 || $filter_submit) ? true : false;
     $find_global_filter = find_global_filter();
     $export_bool = (strcmp(@$_REQUEST['export'],"1") == 0) ? true : false;
     $load_filter = false;
 
-    if($filter) {
-        $tbl_data = $mysql->filter();
+    if($filter || $filter_status || $filter_stage) {
+        if(strcmp($filter_stage,"") != 0) {
+            $tbl_data = $mysql->filter(false,$filter_stage,"");
+            $_SESSION["chart_bool"] = false;
+        } else if(strcmp($filter_status,"") != 0){
+            $tbl_data = $mysql->filter(false,"",$filter_status);
+            $_SESSION["chart_bool"] = false;
+        } else {
+            $tbl_data = $mysql->filter();
+        }
     } else if($find_global_filter && empty($status)){
         if(load_filter()) {
             $load_filter = true;
@@ -65,18 +76,23 @@ session_start();
         switch($status) {
             case "all":
                 $tbl_data = $mysql->get_all();
+                $chart_title = "所有";
                 break;
             case "deleted":
                 $tbl_data = $mysql->get_deleted();
+                $chart_title = "己删除";
                 break;
             case "finish":
                 $tbl_data = $mysql->get_finish();
+                $chart_title = "己完成";
                 break;
             case "in_process":
                 $tbl_data = $mysql->get_in_process();
+                $chart_title = "进行中";
                 break;
             default :
                 $tbl_data = $mysql->get_in_process();
+                $chart_title = "进行中";
         }
     }
 
@@ -108,6 +124,7 @@ session_start();
        <script type="text/javascript" src="public/js/jquery.tablesorter.widgets.min.js"></script>
        <script type="text/javascript" src="public/js/jquery.metadata.js"></script>
        <script type="text/javascript" src="public/js/jquery.datepicker.min.js"></script>
+       <script type="text/javascript" src="public/js/highcharts.js"></script>
        <script>
 
        $(document).ready(function(){
@@ -200,7 +217,6 @@ session_start();
                $("#add_filter").load('admin.php?add_filter=1');
            }});
 
-
            $.extend({show_filter:function(){
                if(row_edit_bool) {
                    $.notify("<span style=\"color: red; font-size: 24px;\">表格编辑中,请先取消编辑.</span>");
@@ -245,6 +261,21 @@ session_start();
                        $.notify("取消Filter 成功");
                    }
                 });
+
+           }});
+
+           $.extend({show_chart:function(){
+                $.get("common.php?opt=show_chart",function(data,status){
+                   if(status == "success") {
+                       if(chart_bool){
+                           $.notify("表格模式。");
+                       } else {
+                           $.notify("图表模式。");
+                       }
+                       setTimeout("window.location.reload();", 1000);
+                   }
+                });
+
 
            }});
 
@@ -360,10 +391,12 @@ session_start();
            $.tablesorter.defaults.headers = {
                0: {sorter: false},
                1: {sorter: false},
+               2: {sorter: false},
                7: {sorter: false},
                8: {sorter: false},
                9: {sorter: false},
                10: {sorter: false},
+               11: {sorter: false},
            };
            $("#project_status_list").tablesorter({
                 widgets        : ['zebra', 'columns'],
@@ -419,7 +452,7 @@ session_start();
                        if(status != "success") {
                            $.notify('添加失败');
                        } else {
-                           $("table.tablesorter").append("<td class=\"show_opt\" colspan=\"<?PHP echo 6 + count($config["STAGE"]) * 2?>\">"+data+"</td>");
+                           $("table.tablesorter").append("<td class=\"show_opt\" colspan=\"<?PHP echo $col_num; ?>\">"+data+"</td>");
                        }
                    });
                    row_edit_bool = true;
@@ -432,7 +465,7 @@ session_start();
                if(touch_bool && touch_on) return;
 
                var edit_row = $(this).parent();
-               var show_opt = "<tr class=\"show_opt\"><td style=\"text-align:center\" colspan=\"<?PHP echo 6 + count($config["STAGE"]) * 2?>\">[<a href=\"admin.php?id="+edit_row.attr("id")+"\">修改</a>] [删除] [己完成]<td></tr>";
+               var show_opt = "<tr class=\"show_opt\"><td style=\"text-align:center\" colspan=\"<?PHP echo $col_num; ?>\">[<a href=\"admin.php?id="+edit_row.attr("id")+"\">修改</a>] [删除] [己完成]<td></tr>";
 
                if(row_edit_bool){
                    $('.show_opt').parent().find("td").each(function(){
@@ -451,7 +484,7 @@ session_start();
                        if(status != "success") {
                            $.notify('更新失败');
                        } else {
-                           edit_row.append("<td class=\"show_opt\" colspan=\"<?PHP echo 6 + count($config["STAGE"]) * 2?>\">"+data+"</td>");
+                           edit_row.append("<td class=\"show_opt\" colspan=\"<?PHP echo $col_num; ?>\">"+data+"</td>");
                        }
                    });
                    row_edit_bool = true;
@@ -500,6 +533,12 @@ endif;
             echo "var model_edit = false;";
             echo "$(\"#model_status\").attr(\"enable\",\"0\");";
             echo "$(\"#model_text\").html(\"<button class='minimal'>只读模式</button>\");";
+        }
+
+        if(@$_SESSION["chart_bool"] == true) {
+            echo "var chart_bool = true;";
+        } else {
+            echo "var chart_bool = false;";
         }
 ?>
 
@@ -566,7 +605,7 @@ endif;
         <table id="project_status_list" class="tablesorter font-face-display">
             <thead>
                 <tr>
-                <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="font-size:16px;text-align:center;height:60px;">
+                <th colspan="<?PHP echo $col_num; ?>" style="font-size:16px;text-align:center;height:80px;">
                     <div class="font-header"><a href="http://bzb.igg.com"><img class="logo" src="http://192.168.23.220/food_order/public/images/BZBee%20logo%20100X100.png" /></a>&nbsp;BZBee Productions 项目状态</div>
                 </th>
                 </tr>
@@ -574,11 +613,12 @@ endif;
     if(! $export_bool):
 ?>
                 <tr>
-                    <th colspan="<?PHP echo 6 + count($config["STAGE"]) * 2?>" style="background-color: khaki;">
+                    <th colspan="<?PHP echo $col_num; ?>" style="background-color: khaki;">
                         <div class="function">
                             <div class="filter_plan">
                                 <div class="php">
                                     <span onClick="$.show_filter();"><img id="filter_img" src="public/img/filter_24x24.png" style="vertical-align: middle;"></span>&nbsp;
+                                    <span><img id="chart_img" src="public/img/chart_24x24.png" style="vertical-align: middle;" onClick="$.show_chart();"></span>&nbsp;
                                     <!--<span onClick="$.add_filter();"><img id="filter_add_img" src="public/img/filter_add_24x24.png" style="vertical-align: middle;display: none;"></span>&nbsp;-->
                                     <a href="index.php?status=in_process"><button id="in_process" class="minimal font-face-display">进行中</button></a>&nbsp;
                                     <a href="index.php?status=all"><button id="all" class="minimal font-face-display">所有</button></a>
@@ -616,6 +656,457 @@ endif;
                 </tr>
 <?PHP
     endif;
+    if(@$_SESSION["chart_bool"]):
+?>
+            </thead>
+            <tbody>
+                <tr>
+                    <th id="chart_report" class="chart_report" colspan="<?PHP echo $col_num; ?>">
+<?PHP
+        if($filter_submit) {
+            $curent_where = "<div class=\"where\">过滤条件: ";
+            foreach($_SESSION["filter_array"] as $key => $row){
+                if(! empty($row) && strcmp($key,"stage_date_json") != 0){
+                    $curent_where .= "<label class=\"where_key\">".$key."</label>=<label class=\"where_value\">".$row."</label> <label class=\"where_and\">AND</label> ";
+                }
+
+                if(strcmp($key,"stage_date_json") == 0){
+                    $date_array = $stage_json->decode($row);
+
+                    if(is_array($date_array)) {
+                        foreach($config["STAGE"] as $item){
+                            foreach($date_array[$item] as $k => $v){
+                                if(! empty($v)){
+                                    $curent_where .= "<label class=\"where_key\">".$item."[".$k."]</label>=<label class=\"where_value\">".$v."</label> <label class=\"where_and\">AND</label> ";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $curent_where = rtrim($curent_where,"<label class=\"where_and\">AND</label> ");
+            $curent_where .= "</div>";
+            echo $curent_where;
+        }
+?>
+                    </th>
+                </tr>
+                <tr>
+                    <td id="chart_report" class="chart_report" colspan="<?PHP echo $col_num/2; ?>">
+                        <div id="total_status_chart_pie" class="chart" style="width:300px;height:300px"></div>
+                        <div id="total_stage_chart_pie" class="chart" style="width:300px;height:300px"></div>
+                        <div id="total_status_chart" class="chart" style="width:300px;height:300px"></div>
+                        <div id="total_stage_chart" class="chart" style="width:300px;height:300px"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="chart_report" class="chart_report" colspan="<?PHP echo $col_num/2; ?>">
+                        <div id="project_status_chart" class="chart" style="width:300px;height:300px"></div>
+                        <div id="project_stage_chart" class="chart" style="width:300px;height:300px"></div>
+                    </td>
+                </tr>
+                <?PHP
+                    $total_status_chart_array = array();
+                    $total_stage_chart_array = array();
+                    $total_num = 0;
+                    $project_status_chart_array = array();
+                    $project_stage_chart_array = array();
+
+                    foreach($tbl_data as $row){
+                        $total_num++;
+
+                        // Chart Status Report
+                        if(is_null($total_status_chart_array[$row["status"]])) {
+                            $total_status_chart_array[$row["status"]] = 1;
+                        } else {
+                            $total_status_chart_array[$row["status"]] += 1;
+                        }
+
+                        // Chart Stage Report
+                        if(is_null($total_stage_chart_array[$row["stage"]])) {
+                            $total_stage_chart_array[$row["stage"]] = 1;
+                        } else {
+                            $total_stage_chart_array[$row["stage"]] += 1;
+                        }
+
+                        // Chart Project stage Report
+                        if(is_null($project_stage_chart_array[$row["name"]][$row["stage"]])){
+                            $project_stage_chart_array[$row["name"]][$row["stage"]] = 1;
+                        } else {
+                            $project_stage_chart_array[$row["name"]][$row["stage"]] += 1;
+                        }
+
+                        // Chart Project Status Report
+                        if(is_null($project_status_chart_array[$row["name"]][$row["status"]])){
+                            $project_status_chart_array[$row["name"]][$row["status"]] = 1;
+                        } else {
+                            $project_status_chart_array[$row["name"]][$row["status"]] += 1;
+                        }
+                    }
+
+                    // Chart Status Pie Report
+                    $total_status_chart_data_pie = "";
+                    foreach($total_status_chart_array as $key => $num){
+                        if($num != 0) {
+                            $temp_num = $num/$total_num*100;
+                        }
+                        if(strcmp($key,"正常") == 0){
+                            $total_status_chart_data_pie .= "{name: '".$key."', color: 'skyblue', y: ".number_format($temp_num,2).", sliced: true, selected: true},";
+                        } else if(strcmp($key,"延迟") == 0){
+                            $total_status_chart_data_pie .= "{name: '".$key."', color: 'Red', y: ".number_format($temp_num,2)."},";
+                        } else if(strcmp($key,"提前") == 0){
+                            $total_status_chart_data_pie .= "{name: '".$key."', color: 'MediumSeaGreen', y: ".number_format($temp_num,2)."},";
+                        } else {
+                            $total_status_chart_data_pie .= "{name: '".$key."', color: '', y: ".number_format($temp_num,2)."},";
+                        }
+                    }
+
+                    // Chart Stage Pie Report
+                    $total_stage_chart_data_pie = "";
+                    foreach($total_stage_chart_array as $key => $num){
+                        if($num != 0) {
+                            $temp_num = $num/$total_num*100;
+                        }
+                        if(strcmp($key,"DEV") == 0){
+                            $total_stage_chart_data_pie .= "{name: '".$key."', y: ".number_format($temp_num,2).", sliced: true, selected: true},";
+                        } else {
+                            $total_stage_chart_data_pie .= "['".$key."',".number_format($temp_num,2)."],";
+                        }
+                    }
+
+                    $total_status_chart_data_pie = rtrim($total_status_chart_data_pie,",");
+
+                    $total_status_chart_data = "";
+                    foreach(array("skyblue" => "正常","MediumSeaGreen" => "提前","red" => "延迟") as $color => $status) {
+                        $total_status_chart_categories .= "'".$status."',";
+                        if(empty($total_status_chart_array[$status])){
+                            $total_status_chart_data .= "'',";
+                        } else {
+                            $total_status_chart_data .= $total_status_chart_array[$status].",";
+                        }
+                    }
+
+                    foreach($config["STAGE"] as $key){
+                        $total_stage_chart_categories .= "'".$key."',";
+                        if(empty($total_stage_chart_array[$key])){
+                            $total_stage_chart_data .= "'',";
+                        } else {
+                            $total_stage_chart_data .= $total_stage_chart_array[$key].",";
+                        }
+                    }
+
+                    foreach($project_stage_chart_array as $key => $status_array){
+                        $project_chart_cagegories .= "'".$key."',";
+                    }
+
+                    $project_stage_chart_data = "";
+                    foreach($config["STAGE"] as $stage) {
+                        $project_stage_chart_data .= "{ name: '".$stage."',data: [";
+
+                        foreach($project_stage_chart_array as $key => $stage_array){
+
+                            if(is_null($stage_array[$stage])){
+                                $project_stage_chart_data .= "0,";
+                            } else {
+                                $project_stage_chart_data .= $stage_array[$stage].",";
+                            }
+                        }
+                        $project_stage_chart_data = rtrim($project_stage_chart_data,",");
+                        $project_stage_chart_data .= "]},";
+                    }
+
+                    $project_status_chart_data = "";
+                    foreach(array("skyblue" => "正常","MediumSeaGreen" => "提前","red" => "延迟") as $color => $status) {
+                        $project_status_chart_data .= "{ name: '".$status."',color: '".$color."' ,data: [";
+
+                        foreach($project_status_chart_array as $key => $status_array){
+
+                            if(is_null($status_array[$status])){
+                                $project_status_chart_data .= "0,";
+                            } else {
+                                $project_status_chart_data .= $status_array[$status].",";
+                            }
+                        }
+                        $project_status_chart_data = rtrim($project_status_chart_data,",");
+                        $project_status_chart_data .= "]},";
+                    }
+                ?>
+            </tbody>
+        </table>
+
+        <script>
+        $(function () {
+            $('#total_status_chart_pie').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: '<?PHP echo $chart_title; ?> 状态占比'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000',
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: '占比',
+                    data: [
+                    <?PHP echo $total_status_chart_data_pie; ?>
+                    ]
+                }]
+            });
+        });
+
+        $(function () {
+            $('#total_stage_chart_pie').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: '<?PHP echo $chart_title; ?> 阶段占比'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000',
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: '占比',
+                    data: [
+                    <?PHP echo $total_stage_chart_data_pie; ?>
+                    ]
+                }]
+            });
+        });
+
+        $(function () {
+            $('#total_stage_chart').highcharts({
+                    plotOptions: {
+                        series: {
+                            cursor: 'pointer',
+                            events: {
+                                click: function(e) {
+                                    location.href = "index.php?filter_stage=" + e.point.category;
+                            }
+                        },
+                        }
+                    },
+                    chart: {
+                        type: 'column',
+                        margin: [ 50, 50, 100, 80]
+                    },
+                    title: {
+                    text: '<?PHP echo $chart_title; ?> 阶段数量'
+                    },
+                    xAxis: {
+                        categories: [
+    <?PHP echo $total_stage_chart_categories; ?>
+                        ],
+                        labels: {
+                            rotation: -45,
+                            align: 'right',
+                            style: {
+                                fontSize: '13px',
+                                fontFamily: 'Verdana, sans-serif'
+                            }
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: ''
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        pointFormat: '<b>{point.y}</b>',
+                    },
+                    series: [{
+                        name: 'Population',
+                            data: [
+    <?PHP echo $total_stage_chart_data; ?>
+                                ],
+                        dataLabels: {
+                            enabled: true,
+                            rotation: -90,
+                            color: '#FFFFFF',
+                            align: 'right',
+                            x: 4,
+                            y: 10,
+                            style: {
+                                fontSize: '13px',
+                                fontFamily: 'Verdana, sans-serif',
+                                textShadow: '0 0 3px black'
+                            }
+                        }
+                    }]
+                });
+            });
+
+        $(function () {
+            $('#total_status_chart').highcharts({
+                    plotOptions: {
+                        series: {
+                            cursor: 'pointer',
+                            events: {
+                                click: function(e) {
+                                    location.href = "index.php?filter_status=" + e.point.category;
+                            }
+                        },
+                        }
+                    },
+                    chart: {
+                        type: 'column',
+                        margin: [ 50, 50, 100, 80]
+                    },
+                    title: {
+                        text: '<?PHP echo $chart_title; ?> 状态数量'
+                    },
+                    xAxis: {
+                        categories: [
+    <?PHP echo $total_status_chart_categories; ?>
+                        ],
+                        labels: {
+                            rotation: -45,
+                            align: 'right',
+                            style: {
+                                fontSize: '13px',
+                                fontFamily: 'Verdana, sans-serif'
+                            }
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: ''
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        pointFormat: '<b>{point.y}</b>',
+                    },
+                    series: [{
+                        name: 'Population',
+                            data: [
+    <?PHP echo $total_status_chart_data; ?>
+                                ],
+                        dataLabels: {
+                            enabled: true,
+                            rotation: -90,
+                            color: '#FFFFFF',
+                            align: 'right',
+                            x: 4,
+                            y: 10,
+                            style: {
+                                fontSize: '13px',
+                                fontFamily: 'Verdana, sans-serif',
+                                textShadow: '0 0 3px black'
+                            }
+                        }
+                    }]
+                });
+            });
+
+            $(function () {
+                $('#project_stage_chart').highcharts({
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '<?PHP echo $chart_title; ?> 项目阶段百分比堆栈图'
+                    },
+                    xAxis: {
+                    categories: [
+<?PHP echo $project_chart_cagegories; ?>
+                    ]
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: ''
+                        }
+                    },
+                    tooltip: {
+                        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+                        shared: true
+                    },
+                    plotOptions: {
+                        column: {
+                            stacking: 'percent'
+                        }
+                    },
+                        series: [
+<?PHP echo $project_stage_chart_data; ?>
+                    ]
+                });
+            });
+
+            $(function () {
+                $('#project_status_chart').highcharts({
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '<?PHP echo $chart_title; ?> 项目状态百分比堆栈图'
+                    },
+                    xAxis: {
+                    categories: [
+<?PHP echo $project_chart_cagegories; ?>
+                    ]
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: ''
+                        }
+                    },
+                    tooltip: {
+                        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+                        shared: true
+                    },
+                    plotOptions: {
+                        column: {
+                            stacking: 'percent'
+                        }
+                    },
+                        series: [
+<?PHP echo $project_status_chart_data; ?>
+                    ]
+                });
+            });
+        </script>
+<?PHP
+    else:
 ?>
                 <tr>
                     <th class="name header font-table-header" rowspan="2">项目</th>
@@ -641,7 +1132,14 @@ endif;
             </thead>
             <tbody>
                 <?PHP
+                    $total_status_chart_array = array();
                     foreach($tbl_data as $row){
+                        if(is_null($total_status_chart_array[$row["status"]])) {
+                            $total_status_chart_array[$row["status"]] = 1;
+                        } else {
+                            $total_status_chart_array[$row["status"]] += 1;
+                        }
+
                         if(strcmp($row["deleted"],0) != 0) {
                             $tag = "<td class=\"%s font-face-display\"><div><s><del>%s</del></s></div></td>";
                         } else if(strcmp($row["finish"],0) != 0) {
@@ -666,9 +1164,17 @@ endif;
                         printf($tag,"note",$row["note"]);
                     echo "</tr>";
                     }
+
+                    foreach($total_status_chart_array as $key => $num){
+                        $total_status_chart_categories .= "'".$key."',";
+                        $total_status_chart_data .= $num.",";
+                    }
                 ?>
             </tbody>
         </table>
+<?PHP
+    endif;
+?>
     </BODY>
 </HTML>
 

@@ -177,13 +177,25 @@ class mysql_lib {
         return $this->query_one($sql);
     }
 
-    public function filter($load_filter = false){
+    public function filter($load_filter = false,$filter_stage="",$filter_status=""){
         global $config;
         $from_array = array();
         $get_db_array = array();
         $db_array = array();
         $return_array = array();
         $stage_json = new stage_date_json();
+
+        // 过滤变量
+        $name = "";
+        $theme_function = "";
+        $version = "";
+        $status = "";
+        $stage = "";
+        $note = "";
+        $include_deleted = "";
+        $include_finish = "";
+        $note_empty = "";
+        $from_array = "";
 
         if(strcmp(@$_REQUEST["filter"],"1") == 0 || $load_filter){
             $name = $_SESSION["filter_array"]["name"];
@@ -196,6 +208,10 @@ class mysql_lib {
             $include_finish = $_SESSION["filter_array"]["include_finish"];
             $note_empty = $_SESSION["filter_array"]["note_empty"];
             $from_array = $stage_json->decode($_SESSION["filter_array"]["stage_date_json"]);
+        } else if(strcmp($filter_stage,"") != 0) {
+            $stage = $filter_stage;
+        } else if(strcmp($filter_status,"") != 0) {
+            $status = $filter_status;
         } else {
             $id = trim(@$_REQUEST['id']);
             $name = trim(@$_REQUEST['name']);
@@ -230,15 +246,24 @@ class mysql_lib {
             }
         }
 
-
         $where = "";
+
         if(empty($include_deleted)) {
-            $where .= " AND deleted = 0 ";
+                $where .= " AND deleted = 0 ";
         }
 
         if(empty($include_finish)) {
-            $where .= " AND finish = 0 ";
+                $where .= " AND finish = 0 ";
         }
+
+        if(! empty($filter_status)) {
+            $where .= " AND status = '".$filter_status."'";
+        }
+
+        if(! empty($filter_stage)) {
+            $where .= " AND stage = '".$filter_stage."'";
+        }
+
 
         $where .= empty($name) ? "" : " AND name = '".$name."'";
         $where .= empty($theme_function) ? "" : " AND theme_function = '".$theme_function."'";

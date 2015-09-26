@@ -32,6 +32,9 @@ session_start();
         case "model_status":
             $o->model_status();
             break;
+        case "show_chart":
+            $o->show_chart();
+            break;
     }
 
 
@@ -67,6 +70,15 @@ class option {
     {
         global $enable;
         $_SESSION["model_edit"] = (strcmp($enable,"1") == 0) ? true : false;
+    }
+
+    public function show_chart()
+    {
+        if($_SESSION["chart_bool"] == true){
+            $_SESSION["chart_bool"] = false;
+        } else {
+            $_SESSION["chart_bool"] = true;
+        }
     }
 }
 ?>
