@@ -46,6 +46,10 @@ session_start();
 
     // 管理员模式
     $_SESSION["admin"] = $allow->pass();
+    // 默认显示图表。
+    if(is_null($_SESSION["chart_bool"])) {
+        $_SESSION["chart_bool"] = true;
+    }
 
     $col_num = 6 + count($config["STAGE"]) * 2;
     $status = trim(@$_REQUEST["status"]);
@@ -618,13 +622,13 @@ endif;
                             <div class="filter_plan">
                                 <div class="php">
                                     <span onClick="$.show_filter();"><img id="filter_img" title="显示\隐藏过滤面板" src="public/img/filter_24x24.png" style="vertical-align: middle;"></span>&nbsp;
-                                    <span><img id="chart_img" src="public/img/chart_24x24.png" title="切换图表与表格" style="vertical-align: middle;" onClick="$.show_chart();"></span>&nbsp;
                                     <!--<span onClick="$.add_filter();"><img id="filter_add_img" src="public/img/filter_add_24x24.png" style="vertical-align: middle;display: none;"></span>&nbsp;-->
                                     <a href="index.php?status=in_process"><button id="in_process" class="minimal font-face-display" title="还未完成的主题\功能">进行中</button></a>&nbsp;
                                     <a href="index.php?status=all"><button id="all" class="minimal font-face-display" title="显示所有主题功能,包括己完成\己删除">所有</button></a>
                                     <a href="index.php?status=finish"><button id="finish" class="minimal font-face-display" title="显示己完成">己完成</button></a>&nbsp;
                                     <a href="index.php?status=deleted"><button id="deleted" class="minimal font-face-display" title="显示己删除">己删除</button></a>&nbsp;
                                     <a href="index.php"><button id="refresh" class="cupid-green font-face-display" title="重新载入index页面">刷新</button></a>&nbsp;
+                                    <span><img id="chart_img" src="public/img/<?PHP echo ($_SESSION["chart_bool"]) ? "table" : "chart"; ?>_24x24.png" title="切换图表与表格" style="vertical-align: middle;" onClick="$.show_chart();"></span>&nbsp;
                                 </div>
                             </div>
                             <div class="export" onClick="$.export();">
@@ -689,25 +693,39 @@ endif;
             </thead>
             <tbody>
                 <tr>
-                    <td id="chart_report" class="chart_report font-face-display" colspan="<?PHP echo $col_num/2; ?>">
+                    <td class="chart_report font-face-display" colspan="<?PHP echo $col_num; ?>" style="background-color: skyblue;">
                         <div id="total_status_chart_pie" class="chart font-face-display" style="width:385px;height:300px"></div>
                         <div id="total_stage_chart_pie" class="chart font-face-display" style="width:385px;height:300px"></div>
                         <div id="total_status_chart" class="chart font-face-display" style="width:385px;height:300px"></div>
                         <div id="total_stage_chart" class="chart font-face-display" style="width:385px;height:300px"></div>
+                        <!--<div id="project_status_chart" class="chart font-face-display" style="width:385px;height:300px"></div>-->
+                        <!--<div id="project_stage_chart" class="chart font-face-display" style="width:385px;height:300px"></div>-->
                     </td>
                 </tr>
-                <tr>
-                    <td id="chart_report" class="chart_report font-face-display" colspan="<?PHP echo $col_num/2; ?>">
-                        <div id="project_status_chart" class="chart font-face-display" style="width:385px;height:300px"></div>
-                        <div id="project_stage_chart" class="chart font-face-display" style="width:385px;height:300px"></div>
-                    </td>
-                </tr>
+<?PHP
+                    foreach($mysql->get_names() as $name_array) {
+                        echo "<tr><td class=\"chart_report font-face-display\" colspan=\"".$col_num."\" style=\"background-color: skyblue;\">";
+                        echo "<div id=\"".$name_array["name"]."_status_chart_pie\" class=\"chart font-face-display\" style=\"width:385px;height:300px\"></div>";
+                        echo "<div id=\"".$name_array["name"]."_stage_chart_pie\" class=\"chart font-face-display\" style=\"width:385px;height:300px\"></div>";
+                    echo "</td></tr>";
+                    }
+?>
                 <?PHP
                     $total_status_chart_array = array();
                     $total_stage_chart_array = array();
                     $total_num = 0;
                     $project_status_chart_array = array();
                     $project_stage_chart_array = array();
+                    $stage_color = array();
+
+
+                    $color_status = array("skyblue" => "正常","MediumSeaGreen" => "提前","red" => "延迟");
+                    $color_array = array("red","GreenYellow","skyblue","MediumSeaGreen");
+                    $i = 0;
+                    foreach($config["STAGE"] as $stage) {
+                        $stage_color[$stage] = $color_array[$i];
+                        $i++;
+                    }
 
                     foreach($tbl_data as $row){
                         $total_num++;
@@ -757,24 +775,30 @@ endif;
                             $total_status_chart_data_pie .= "{name: '".$key."', color: '', y: ".number_format($temp_num,2)."},";
                         }
                     }
+                    $total_status_chart_data_pie = rtrim($total_status_chart_data_pie,",");
+
 
                     // Chart Stage Pie Report
                     $total_stage_chart_data_pie = "";
-                    foreach($total_stage_chart_array as $key => $num){
-                        if($num != 0) {
-                            $temp_num = $num/$total_num*100;
-                        }
-                        if(strcmp($key,"DEV") == 0){
-                            $total_stage_chart_data_pie .= "{name: '".$key."', y: ".number_format($temp_num,2).", sliced: true, selected: true},";
+                    foreach($stage_color as $stage => $color){
+                        $total_stage_chart_data_pie .= "{ name: '".$stage."',color: '".$color."', y: ";
+                        if(is_null($total_stage_chart_array[$stage])){
+                            $total_stage_chart_data_pie .= "0,";
                         } else {
-                            $total_stage_chart_data_pie .= "['".$key."',".number_format($temp_num,2)."],";
+                            if(strcmp($stage,"DEV") == 0) {
+                                $total_stage_chart_data_pie .= $total_stage_chart_array[$stage].",sliced: true, selected: true";
+                            } else {
+                                $total_stage_chart_data_pie .= $total_stage_chart_array[$stage].",";
+                            }
                         }
+
+                        $total_stage_chart_data_pie = rtrim($total_stage_chart_data_pie,",");
+                        $total_stage_chart_data_pie .= "},";
                     }
 
-                    $total_status_chart_data_pie = rtrim($total_status_chart_data_pie,",");
-
+                    // Chart Status column Report
                     $total_status_chart_data = "";
-                    foreach(array("skyblue" => "正常","MediumSeaGreen" => "提前","red" => "延迟") as $color => $status) {
+                    foreach($color_status as $color => $status) {
                         $total_status_chart_categories .= "'".$status."',";
                         if(empty($total_status_chart_array[$status])){
                             $total_status_chart_data .= "'',";
@@ -783,7 +807,8 @@ endif;
                         }
                     }
 
-                    foreach($config["STAGE"] as $key){
+                    // Chart Stage column Report
+                    foreach($stage_color as $key => $color){
                         $total_stage_chart_categories .= "'".$key."',";
                         if(empty($total_stage_chart_array[$key])){
                             $total_stage_chart_data .= "'',";
@@ -797,8 +822,8 @@ endif;
                     }
 
                     $project_stage_chart_data = "";
-                    foreach($config["STAGE"] as $stage) {
-                        $project_stage_chart_data .= "{ name: '".$stage."',data: [";
+                    foreach($stage_color as $stage => $color){
+                        $project_stage_chart_data .= "{ name: '".$stage."',color:'".$color."',data: [";
 
                         foreach($project_stage_chart_array as $key => $stage_array){
 
@@ -812,8 +837,50 @@ endif;
                         $project_stage_chart_data .= "]},";
                     }
 
+
+                    // Chart Project Status Pie Report
+                    $project_status_chart_data_pie = array();
+                    foreach($color_status as $color => $status ) {
+                        foreach($project_status_chart_array as $k => $status_array){
+                            $project_status_chart_data_pie[$k] .= "{ name: '".$status."',color: '".$color."', y: ";
+                            if(is_null($status_array[$status])){
+                                $project_status_chart_data_pie[$k] .= "0,";
+                            } else {
+                                if(strcmp($status,"正常") == 0) {
+                                    $project_status_chart_data_pie[$k] .= $status_array[$status].",sliced: true, selected: true";
+                                } else {
+                                    $project_status_chart_data_pie[$k] .= $status_array[$status].",";
+                                }
+                            }
+
+                            $project_status_chart_data_pie[$k] = rtrim($project_status_chart_data_pie[$k],",");
+                            $project_status_chart_data_pie[$k] .= "},";
+                        }
+                    }
+
+                    // Chart Project Stage Pie Report
+                    $project_stage_chart_data_pie = array();
+                    foreach($project_stage_chart_array as $k => $stage_array){
+                        foreach($stage_color as $stage => $color){
+                            $project_stage_chart_data_pie[$k] .= "{ name: '".$stage."',color: '".$color."', y: ";
+
+                            if(is_null($stage_array[$stage])){
+                                $project_stage_chart_data_pie[$k] .= "0,";
+                            } else {
+                                if(strcmp($stage,"DEV") == 0) {
+                                    $project_stage_chart_data_pie[$k] .= $stage_array[$stage].",sliced: true, selected: true";
+                                } else {
+                                    $project_stage_chart_data_pie[$k] .= $stage_array[$stage].",";
+                                }
+                            }
+
+                            $project_stage_chart_data_pie[$k] = rtrim($project_stage_chart_data_pie[$k],",");
+                            $project_stage_chart_data_pie[$k] .= "},";
+                        }
+                    }
+
                     $project_status_chart_data = "";
-                    foreach(array("skyblue" => "正常","MediumSeaGreen" => "提前","red" => "延迟") as $color => $status) {
+                    foreach($color_array as $color => $status) {
                         $project_status_chart_data .= "{ name: '".$status."',color: '".$color."' ,data: [";
 
                         foreach($project_status_chart_array as $key => $status_array){
@@ -840,7 +907,7 @@ endif;
                     plotShadow: false
                 },
                 title: {
-                    text: '<?PHP echo $chart_title; ?> 状态占比'
+                    text: '<?PHP echo $chart_title; ?> 总状态占比'
                 },
                 tooltip: {
                     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -875,7 +942,7 @@ endif;
                     plotShadow: false
                 },
                 title: {
-                    text: '<?PHP echo $chart_title; ?> 阶段占比'
+                    text: '<?PHP echo $chart_title; ?> 总阶段占比'
                 },
                 tooltip: {
                     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -901,7 +968,85 @@ endif;
                 }]
             });
         });
+<?PHP
+    foreach($project_status_chart_data_pie as $k => $value ):
+?>
+        $(function () {
+            $('<?PHP echo "#$k"; ?>_status_chart_pie').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: '<?PHP echo "[".$k."项目]".$chart_title; ?> 状态占比'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000',
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: '占比',
+                    data: [
+                    <?PHP echo $value; ?>
+                    ]
+                }]
+            });
+        });
 
+<?PHP
+    endforeach;
+    foreach($project_stage_chart_data_pie as $k => $value):
+?>
+        $(function () {
+            $('<?PHP echo "#".$k; ?>_stage_chart_pie').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: '<?PHP echo "[".$k."项目]".$chart_title; ?> 阶段占比'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000',
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: '占比',
+                    data: [
+                    <?PHP echo $value; ?>
+                    ]
+                }]
+            });
+        });
+<?PHP
+    endforeach;
+?>
         $(function () {
             $('#total_stage_chart').highcharts({
                     plotOptions: {

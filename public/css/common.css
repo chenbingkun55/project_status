@@ -97,6 +97,10 @@ table.admin_page {
     float: left;
 }
 
+.chart_repost {
+    background-color: skyblue;
+}
+
 .admin {
     font-size: 14px;
     padding: 5px;
