@@ -395,6 +395,9 @@ session_start();
            $.tablesorter.defaults.headers = {
                0: {sorter: false},
                1: {sorter: false},
+<?PHP
+               echo ($filter || $find_global_filter) ? "2: {sorter: false}," : "";
+?>
                7: {sorter: false},
                8: {sorter: false},
                9: {sorter: false},
