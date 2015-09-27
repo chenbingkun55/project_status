@@ -62,6 +62,8 @@ session_start();
     $load_filter = false;
 
     if($filter || $filter_status || $filter_stage) {
+        $chart_title = "过滤条件";
+
         if(strcmp($filter_stage,"") != 0) {
             $tbl_data = $mysql->filter(false,$filter_stage,"");
             $_SESSION["chart_bool"] = false;
