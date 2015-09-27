@@ -395,12 +395,10 @@ session_start();
            $.tablesorter.defaults.headers = {
                0: {sorter: false},
                1: {sorter: false},
-               2: {sorter: false},
                7: {sorter: false},
                8: {sorter: false},
                9: {sorter: false},
                10: {sorter: false},
-               11: {sorter: false},
            };
            $("#project_status_list").tablesorter({
                 widgets        : ['zebra', 'columns'],
@@ -627,7 +625,7 @@ endif;
                                     <a href="index.php?status=all"><button id="all" class="minimal font-face-display" title="显示所有主题功能,包括己完成\己删除">所有</button></a>
                                     <a href="index.php?status=finish"><button id="finish" class="minimal font-face-display" title="显示己完成">己完成</button></a>&nbsp;
                                     <a href="index.php?status=deleted"><button id="deleted" class="minimal font-face-display" title="显示己删除">己删除</button></a>&nbsp;
-                                    <a href="index.php"><button id="refresh" class="cupid-green font-face-display" title="重新载入index页面">刷新</button></a>&nbsp;
+                                    <a href="index.php"><button id="refresh" class="minimal font-face-display" title="重新载入index页面">刷新</button></a>&nbsp;
                                     <span><img id="chart_img" src="public/img/<?PHP echo ($_SESSION["chart_bool"]) ? "table" : "chart"; ?>_24x24.png" title="切换图表与表格" style="vertical-align: middle;" onClick="$.show_chart();"></span>&nbsp;
                                 </div>
                             </div>

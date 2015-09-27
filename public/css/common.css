@@ -1,18 +1,18 @@
 @font-face {
     font-family: "System\ San\ Francisco\ Text\ Bold";
-    src: url(//:) format("no404"), url("/project_status/public/fonts/System\ San\ Francisco\ Text\ Bold.ttf") format("truetype");
+    src: url(//:) format("no404"), url("../fonts/System\ San\ Francisco\ Text\ Bold.ttf") format("truetype");
     font-weight: bold;
 }
 
 @font-face {
     font-family: "System\ San\ Francisco\ Text\ Heavy";
-    src: url(//:) format("no404"), url("/project_status/public/fonts/System\ San\ Francisco\ Text\ Heavy.ttf") format("truetype");
+    src: url(//:) format("no404"), url("../fonts/System\ San\ Francisco\ Text\ Heavy.ttf") format("truetype");
     font-weight: bold;
 }
 
 @font-face {
     font-family: "System\ San\ Francisco\ Text\ Regular";
-    src: url(//:) format("no404"), url("/project_status/public/fonts/System\ San\ Francisco\ Text\ Regular.ttf") format("truetype");
+    src: url(//:) format("no404"), url("../fonts/System\ San\ Francisco\ Text\ Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
@@ -95,6 +95,11 @@ table.admin_page {
 .chart {
     margin: 5px;
     float: left;
+}
+
+#refresh{
+    background: url('../img/refresh_24x24.png') no-repeat 70px;
+    background-color: #e3e3e3;
 }
 
 .chart_repost {
