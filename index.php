@@ -657,7 +657,7 @@ endif;
                     </th>
                 </tr>
 <?PHP
-        if($filter_submit) {
+        if($filter_submit || $find_global_filter) {
             echo "<tr><td class=\"chart_report font-face-display\" colspan=\"".$col_num."\" style=\"background-color: khaki;
 \">";
             $curent_where = "<div class=\"where\">过滤条件: ";
