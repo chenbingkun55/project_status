@@ -905,7 +905,7 @@ endif;
                     plotShadow: false
                 },
                 title: {
-                    text: '<?PHP echo $chart_title; ?> 总状态占比'
+                    text: '[所有项目]<?PHP echo $chart_title; ?> 状态比例图'
                 },
                 tooltip: {
                     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -940,7 +940,7 @@ endif;
                     plotShadow: false
                 },
                 title: {
-                    text: '<?PHP echo $chart_title; ?> 总阶段占比'
+                    text: '[所有项目]<?PHP echo $chart_title; ?> 阶段比例图'
                 },
                 tooltip: {
                     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -977,7 +977,7 @@ endif;
                     plotShadow: false
                 },
                 title: {
-                    text: '<?PHP echo "[".$k."项目]".$chart_title; ?> 状态占比'
+                    text: '<?PHP echo "[".$k."项目]".$chart_title; ?> 状态比例图'
                 },
                 tooltip: {
                     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -1016,7 +1016,7 @@ endif;
                     plotShadow: false
                 },
                 title: {
-                    text: '<?PHP echo "[".$k."项目]".$chart_title; ?> 阶段占比'
+                    text: '<?PHP echo "[".$k."项目]".$chart_title; ?> 阶段比例图'
                 },
                 tooltip: {
                     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -1062,7 +1062,7 @@ endif;
                         margin: [ 50, 50, 100, 80]
                     },
                     title: {
-                    text: '<?PHP echo $chart_title; ?> 阶段数量'
+                    text: '[所有项目]<?PHP echo $chart_title; ?> 阶段数量图'
                     },
                     xAxis: {
                         categories: [
@@ -1128,7 +1128,7 @@ endif;
                         margin: [ 50, 50, 100, 80]
                     },
                     title: {
-                        text: '<?PHP echo $chart_title; ?> 状态数量'
+                        text: '[所有项目]<?PHP echo $chart_title; ?> 状态数量图'
                     },
                     xAxis: {
                         categories: [
