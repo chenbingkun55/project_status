@@ -63,7 +63,7 @@ class mysql_lib {
     public function conn_db(){
         global $config;
 
-        $this->con = mysql_connect($config["DB_HOST"],$config["DB_USER"],$config["DB_PASSWORD"]);
+        $this->con = @mysql_connect($config["DB_HOST"],$config["DB_USER"],$config["DB_PASSWORD"]);
         if(!$this->con) {
             die('could not connect: '. mysql_error());
         }
@@ -196,7 +196,6 @@ class mysql_lib {
         $include_deleted = "";
         $include_finish = "";
         $note_empty = "";
-        $from_array = "";
 
         if(strcmp(@$_REQUEST["filter"],"1") == 0 || $load_filter){
             $name = $_SESSION["filter_array"]["name"];
@@ -243,7 +242,7 @@ class mysql_lib {
                 //}
                 $real_color = trim(@$_REQUEST["RealColor-".$item]) ? trim(@$_REQUEST["RealColor-".$item]) : "";
 
-                $from_array[$item] = array('PlanDate' => $plan_date,'PlanEndDate' => $plan_enddate, 'PlanColor' => $plan_color,'RealDate' => $real_date,'RealEndDate' => $real_enddate, 'RealColor' => $real_color);
+                @$from_array[$item] = array('PlanDate' => $plan_date,'PlanEndDate' => $plan_enddate, 'PlanColor' => $plan_color,'RealDate' => $real_date,'RealEndDate' => $real_enddate, 'RealColor' => $real_color);
             }
         }
 
@@ -299,8 +298,8 @@ class mysql_lib {
 
                 // plan 时间比对.
                 $db_plan_time = strtotime($db_array[$item]["PlanDate"]);
-                $from_plan_st = strtotime($from_array[$item]["PlanDate"]);
-                $from_plan_et = strtotime($from_array[$item]["PlanEndDate"]);
+                $from_plan_st = strtotime(@$from_array[$item]["PlanDate"]);
+                $from_plan_et = strtotime(@$from_array[$item]["PlanEndDate"]);
 
                 if(! empty($from_plan_st) && ! empty($from_plan_et)) {
                     $date_array[$item.".plan"] = ($from_plan_st <= $db_plan_time && $db_plan_time <= $from_plan_et) ? true : false;
@@ -312,8 +311,8 @@ class mysql_lib {
 
                 // real 时间比对.
                 $db_real_time = strtotime($db_array[$item]["RealDate"]);
-                $from_real_st = strtotime($from_array[$item]["RealDate"]);
-                $from_real_et = strtotime($from_array[$item]["RealEndDate"]);
+                $from_real_st = strtotime(@$from_array[$item]["RealDate"]);
+                $from_real_et = strtotime(@$from_array[$item]["RealEndDate"]);
 
                 if(! empty($from_real_st) && ! empty($from_real_et)) {
                     $date_array[$item.".real"] = ($from_real_st <= $db_real_time && $db_real_time <= $from_real_et) ? true : false;
@@ -325,7 +324,7 @@ class mysql_lib {
 
                 // plan 颜色比对.
                 $db_plan_color = $db_array[$item]["PlanColor"];
-                $from_plan_color = $from_array[$item]["PlanColor"];
+                $from_plan_color = @$from_array[$item]["PlanColor"];
 
                 if(! empty($from_plan_color)){
                     $colors[$item.".plan"]  = (strcmp($from_plan_color,$db_plan_color) == 0) ? true : false;
@@ -333,7 +332,7 @@ class mysql_lib {
 
                 // real 颜色比对.
                 $db_real_color = $db_array[$item]["RealColor"];
-                $from_real_color = $from_array[$item]["RealColor"];
+                $from_real_color = @$from_array[$item]["RealColor"];
 
                 if(! empty($from_real_color)){
                     $colors[$item.".real"]  = (strcmp($from_real_color,$db_real_color) == 0) ? true : false;

@@ -39,6 +39,7 @@ f04540a * 加载 tablestore * 添加、删除、修改功能
 **/
 
 session_start();
+date_default_timezone_set('PRC');
     include "lib.php";
 
     // 允许IP访问.
@@ -734,28 +735,28 @@ endif;
                         $total_num++;
 
                         // Chart Status Report
-                        if(is_null($total_status_chart_array[$row["status"]])) {
+                        if(is_null(@$total_status_chart_array[$row["status"]])) {
                             $total_status_chart_array[$row["status"]] = 1;
                         } else {
                             $total_status_chart_array[$row["status"]] += 1;
                         }
 
                         // Chart Stage Report
-                        if(is_null($total_stage_chart_array[$row["stage"]])) {
+                        if(is_null(@$total_stage_chart_array[$row["stage"]])) {
                             $total_stage_chart_array[$row["stage"]] = 1;
                         } else {
                             $total_stage_chart_array[$row["stage"]] += 1;
                         }
 
                         // Chart Project stage Report
-                        if(is_null($project_stage_chart_array[$row["name"]][$row["stage"]])){
+                        if(is_null(@$project_stage_chart_array[$row["name"]][$row["stage"]])){
                             $project_stage_chart_array[$row["name"]][$row["stage"]] = 1;
                         } else {
                             $project_stage_chart_array[$row["name"]][$row["stage"]] += 1;
                         }
 
                         // Chart Project Status Report
-                        if(is_null($project_status_chart_array[$row["name"]][$row["status"]])){
+                        if(is_null(@$project_status_chart_array[$row["name"]][$row["status"]])){
                             $project_status_chart_array[$row["name"]][$row["status"]] = 1;
                         } else {
                             $project_status_chart_array[$row["name"]][$row["status"]] += 1;
@@ -785,7 +786,7 @@ endif;
                     $total_stage_chart_data_pie = "";
                     foreach($stage_color as $stage => $color){
                         $total_stage_chart_data_pie .= "{ name: '".$stage."',color: '".$color."', y: ";
-                        if(is_null($total_stage_chart_array[$stage])){
+                        if(is_null(@$total_stage_chart_array[$stage])){
                             $total_stage_chart_data_pie .= "0,";
                         } else {
                             if(strcmp($stage,"DEV") == 0) {
@@ -801,6 +802,7 @@ endif;
 
                     // Chart Status column Report
                     $total_status_chart_data = "";
+                    $total_status_chart_categories = "";
                     foreach($color_status as $color => $status) {
                         $total_status_chart_categories .= "'".$status."',";
                         if(empty($total_status_chart_array[$status])){
@@ -811,6 +813,8 @@ endif;
                     }
 
                     // Chart Stage column Report
+                    $total_stage_chart_categories = "";
+                    $total_stage_chart_data = "";
                     foreach($stage_color as $key => $color){
                         $total_stage_chart_categories .= "'".$key."',";
                         if(empty($total_stage_chart_array[$key])){
@@ -820,6 +824,7 @@ endif;
                         }
                     }
 
+                    $project_chart_cagegories = "";
                     foreach($project_stage_chart_array as $key => $status_array){
                         $project_chart_cagegories .= "'".$key."',";
                     }
@@ -830,7 +835,7 @@ endif;
 
                         foreach($project_stage_chart_array as $key => $stage_array){
 
-                            if(is_null($stage_array[$stage])){
+                            if(is_null(@$stage_array[$stage])){
                                 $project_stage_chart_data .= "0,";
                             } else {
                                 $project_stage_chart_data .= $stage_array[$stage].",";
@@ -845,8 +850,8 @@ endif;
                     $project_status_chart_data_pie = array();
                     foreach($color_status as $color => $status ) {
                         foreach($project_status_chart_array as $k => $status_array){
-                            $project_status_chart_data_pie[$k] .= "{ name: '".$status."',color: '".$color."', y: ";
-                            if(is_null($status_array[$status])){
+                            @$project_status_chart_data_pie[$k] .= "{ name: '".$status."',color: '".$color."', y: ";
+                            if(is_null(@$status_array[$status])){
                                 $project_status_chart_data_pie[$k] .= "0,";
                             } else {
                                 if(strcmp($status,"正常") == 0) {
@@ -865,9 +870,9 @@ endif;
                     $project_stage_chart_data_pie = array();
                     foreach($project_stage_chart_array as $k => $stage_array){
                         foreach($stage_color as $stage => $color){
-                            $project_stage_chart_data_pie[$k] .= "{ name: '".$stage."',color: '".$color."', y: ";
+                            @$project_stage_chart_data_pie[$k] .= "{ name: '".$stage."',color: '".$color."', y: ";
 
-                            if(is_null($stage_array[$stage])){
+                            if(is_null(@$stage_array[$stage])){
                                 $project_stage_chart_data_pie[$k] .= "0,";
                             } else {
                                 if(strcmp($stage,"DEV") == 0) {
@@ -888,7 +893,7 @@ endif;
 
                         foreach($project_status_chart_array as $key => $status_array){
 
-                            if(is_null($status_array[$status])){
+                            if(is_null(@$status_array[$status])){
                                 $project_status_chart_data .= "0,";
                             } else {
                                 $project_status_chart_data .= $status_array[$status].",";
@@ -1279,7 +1284,7 @@ endif;
                 <?PHP
                     $total_status_chart_array = array();
                     foreach($tbl_data as $row){
-                        if(is_null($total_status_chart_array[$row["status"]])) {
+                        if(is_null(@$total_status_chart_array[$row["status"]])) {
                             $total_status_chart_array[$row["status"]] = 1;
                         } else {
                             $total_status_chart_array[$row["status"]] += 1;
@@ -1310,6 +1315,8 @@ endif;
                     echo "</tr>";
                     }
 
+                    $total_status_chart_categories = "";
+                    $total_status_chart_data = "";
                     foreach($total_status_chart_array as $key => $num){
                         $total_status_chart_categories .= "'".$key."',";
                         $total_status_chart_data .= $num.",";
