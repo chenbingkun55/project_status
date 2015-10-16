@@ -141,6 +141,7 @@ date_default_timezone_set('PRC');
                    $("body").css("width","1600px");
                    body_width = 1600;
                }
+               $(".where").css("width",(body_width-20)+"px");
                $(".main_notify").css("left",(body_width/10*6)+"px");
                $(".theme_function").css("width",(body_width/7)+"px");
                $(".theme_function").find("div").css("width",(body_width/7)+"px");
