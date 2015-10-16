@@ -679,7 +679,7 @@ endif;
                     if(is_array($date_array)) {
                         foreach($config["STAGE"] as $item){
                             foreach($date_array[$item] as $k => $v){
-                                if(! empty($v)){
+                                if(! empty($v) && strcmp($v,"N/A") != 0){
                                     $curent_where .= "<label class=\"where_key\">".$item."[".$k."]</label>=<label class=\"where_value\">".$v."</label><label class=\"where_and\">AND</label>";
                                 }
                             }
