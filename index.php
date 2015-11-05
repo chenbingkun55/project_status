@@ -48,7 +48,7 @@ date_default_timezone_set('PRC');
     // 管理员模式
     $_SESSION["admin"] = $allow->pass();
     // 默认显示图表。
-    if(is_null($_SESSION["chart_bool"])) {
+    if(is_null(@$_SESSION["chart_bool"])) {
         $_SESSION["chart_bool"] = true;
     }
 
