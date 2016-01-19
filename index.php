@@ -616,7 +616,7 @@ endif;
             <thead>
                 <tr>
                 <th colspan="<?PHP echo $col_num; ?>" style="font-size:16px;text-align:center;height:80px;">
-                    <div class="font-header"><a href="http://bzb.igg.com"><img class="logo" src="http://192.168.23.220/food_order/public/images/BZBee%20logo%20100X100.png" /></a>&nbsp;BZBee Productions 项目状态</div>
+                    <div class="font-header"><a href="http://bzb.igg.com"><img class="logo" src="http://bzbfzweb.iggcn.com/food_order/public/images/BZBee%20logo%20100X100.png" /></a>&nbsp;BZBee Productions 项目状态</div>
                 </th>
                 </tr>
 <?PHP
